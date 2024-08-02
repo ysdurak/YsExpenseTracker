@@ -20,16 +20,17 @@ struct CustomTabBar: View {
                     .overlay {
                         Text(tab.rawValue)
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(Color("Black"))
+                            .foregroundColor(Color.black)
                             .offset(y: currentTab == tab ? 15 : 100)
                     }
             }
         }
         .padding(.top)
         .padding(.bottom,getSafeArea().bottom == 0 ? 15 : 10)
+        
         .background{
-            Color.white
-                .shadow(color: Color("Black").opacity(0.08), radius: 5, x: 0, y: -5)
+            Color.black
+                .shadow(color: Color.black.opacity(0.08), radius: 5, x: 0, y: -5)
                 .clipShape(BottomCurve(currentXValue: currentXValue))
                 .ignoresSafeArea(.container, edges: .bottom)
         }
@@ -48,7 +49,7 @@ struct CustomTabBar: View {
                 
             } label: {
                 // Moving Button up for current Tab...
-                Image(tab.rawValue)
+                Image(systemName: tab.rawValue)
                 // Since we need perfect value for Curve...
                     .resizable()
                     .renderingMode(.template)
@@ -61,8 +62,8 @@ struct CustomTabBar: View {
                         ZStack{
                             if currentTab == tab{
                                 Circle()
-                                    .fill(Color("Orange"))
-                                    .shadow(color: Color("Black").opacity(0.1), radius: 8, x: 5, y: 5)
+                                    .fill(Color.orange)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 8, x: 5, y: 5)
                                     .matchedGeometryEffect(id: "TAB", in: animation)
                             }
                         }
@@ -85,10 +86,11 @@ struct CustomTabBar: View {
 
 // MARK: Tabs
 enum Tab: String,CaseIterable{
-    case home = "Home"
-    case cart = "Cart"
-    case favourite = "Star"
-    case profile = "Profile"
+    case home = "house"
+    case cart = "menucard"
+    case add = "plus.circle"
+    case favourite = "star"
+    case profile = "person.circle"
 }
 
 // Getting Safe Area...

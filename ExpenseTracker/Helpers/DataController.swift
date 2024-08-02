@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 class DataController: ObservableObject {
-    let container = NSPersistentContainer(name: "ExpenseModel")
+    let container = NSPersistentContainer(name: "ExpenseData")
     
     init() {
         container.loadPersistentStores { desc, error in
@@ -22,7 +22,6 @@ class DataController: ObservableObject {
     func save(context: NSManagedObjectContext) {
         do {
             try context.save()
-            print("Data saved successfully. WUHU!!!")
         } catch {
             // Handle errors in our database
             let nsError = error as NSError
@@ -30,20 +29,23 @@ class DataController: ObservableObject {
         }
     }
     
-    func addExpense(category: String, date : Date, note: String, value: Double) {
+    func addExpense(category: String, date : Date, note: String, value: Double, context: NSManagedObjectContext) {
         let expense = Expense(context: context)
-        food.id = UUID()
-        food.date = Date()
-        food.name = name
-        food.calories = calories
+        expense.category = category
+        expense.id = UUID()
+        expense.date = date
+        expense.note = note
+        expense.value = value
         
         save(context: context)
     }
     
-    func editFood(food: Food, name: String, calories: Double, context: NSManagedObjectContext) {
-        food.date = Date()
-        food.name = name
-        food.calories = calories
+    func editFood(expense: Expense, category: String, date : Date, note: String, value: Double, context: NSManagedObjectContext) {
+        expense.category = category
+        expense.id = UUID()
+        expense.date = date
+        expense.note = note
+        expense.value = value
         
         save(context: context)
     }
