@@ -11,6 +11,8 @@ import Foundation
 final class RegisterScreenViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var errorMes: String = ""
+    @Published var showAlert: Bool = false
     
     func registerUser(completion: (() -> Void)?){
         guard !email.isEmpty, !password.isEmpty else {
@@ -24,6 +26,8 @@ final class RegisterScreenViewModel: ObservableObject {
                 completion?()
             }
             catch {
+                errorMes = error.localizedDescription
+                showAlert = true
                 print(error)            }
         }
         

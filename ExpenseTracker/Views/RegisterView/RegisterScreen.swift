@@ -12,6 +12,7 @@ import SwiftUI
 struct RegisterScreen: View {
     @StateObject private var viewModel = RegisterScreenViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @State var showingAlert = false
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
@@ -65,6 +66,16 @@ struct RegisterScreen: View {
                 Spacer()
             }
             .padding(10)
+        }
+        .alert(isPresented: $showingAlert, content: {
+            Alert(title: Text("Hata"), message: Text(viewModel.errorMes ?? "Bir hata oluştu"), dismissButton: .default(Text("Tamam"), action: {
+                viewModel.showAlert = false // Reset the alert state if needed
+            }))
+        })
+        .onChange(of: viewModel.showAlert) { newValue in
+            if newValue {
+                showingAlert = true
+            }
         }
 
     }
