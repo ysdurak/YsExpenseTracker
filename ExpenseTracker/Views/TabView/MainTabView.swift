@@ -48,7 +48,7 @@ struct MainTabView: View {
                     .setUpTab()
                     .environment(\.managedObjectContext, managedObjContext)
                 
-                Text("Profile")
+                ProfileScreen()
                     .tag(Tab.profile)
                     .setUpTab()
             }

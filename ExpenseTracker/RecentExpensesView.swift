@@ -7,44 +7,52 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
 struct RecentExpensesView: View {
+    
+    @StateObject private var viewModel = RecentExpensesViewModel()
+    @State var expenses: [ExpenseModel] = []
+    
     var body: some View {
-        NavigationView {
-            ScrollView{
-                
-                VStack(alignment: .leading, spacing: 10){
-                    PeelEffect {
-                        RecentExpensesCell()
-                    } onDelete: {
-                        print("deleted")
+        ZStack{
+            NavigationView {
+                List {
+                    ForEach(viewModel.expenses, id: \.id) { expense in
+                        RecentExpensesCell(
+                            date: expense.date ,
+                            category: expense.category ,
+                            note: expense.note,
+                            value: expense.amount
+                        )
+                        .swipeActions(allowsFullSwipe: true) {
+                            Button {
+                                viewModel.deleteExpense(id: expense.id ?? "")
+                            } label: {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
                     }
-                    .padding(.horizontal, 20)
-                    PeelEffect {
-                        RecentExpensesCell()
-                    } onDelete: {
-                        print("deleted")
-                    }
-                    .padding(.horizontal, 20)
-                    PeelEffect {
-                        RecentExpensesCell()
-                    } onDelete: {
-                        print("deleted")
-                    }
-                    .padding(.horizontal, 20)
-                    PeelEffect {
-                        RecentExpensesCell()
-                    } onDelete: {
-                        print("deleted")
-                    }
-                    .padding(.horizontal, 20)
-
                 }
-                .padding(.top, 15)
-                
+                .navigationTitle("Son Harcamalarım")
+                .navigationBarTitleDisplayMode(.large)
+                .listStyle(PlainListStyle())
             }
-            .navigationTitle("Son Harcamalarım")
-            .navigationBarTitleDisplayMode(.large)
+            
+        }
+        .onAppear{
+            viewModel.fetchRecentExpenses()
+        }
+
+    }
+    
+    private func deleteExpense(_ expense: Expense) {
+        withAnimation{
         }
     }
+
 }
+
+
+

@@ -8,18 +8,6 @@
 import Foundation
 import SwiftUI
 
-@MainActor
-final class SettingsScreenViewModel: ObservableObject {
-    @Published var isAuthenticated: Bool = true
-
-    func signOut(authViewModel: AuthViewModel) {
-        do {
-            try authViewModel.signOut()
-        } catch {
-            print(error)
-        }
-    }
-}
 
 struct SettingsScreen: View {
     @StateObject private var viewModel = SettingsScreenViewModel()

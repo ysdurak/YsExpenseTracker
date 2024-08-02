@@ -26,43 +26,6 @@ struct PickerView: View {
     }
 }
 
-struct DropdownPickerView: View {
-    @State private var selectedOptionIndex = 0
-    let options: [String]
-    
-    var body: some View {
-        VStack {
-            Menu {
-                ForEach(0..<options.count) { index in
-                    Button(action: {
-                        selectedOptionIndex = index
-                    }) {
-                        Text(options[index])
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(options[selectedOptionIndex])
-                        .foregroundColor(.black)
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(.black)
-                    
-                }
-                .padding()
-                .background(Color.white)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 3)
-                        .stroke(Color.black, lineWidth: 1)
-                    
-                }
-            }
-            
-        }
-        .padding(.trailing, 20)
-        .frame(height: 90)
-    }
-}
 
 struct CustomTextFieldNumber: View {
     @State private var inputValue = ""
@@ -83,26 +46,6 @@ struct CustomTextFieldNumber: View {
         }
         .padding(.trailing, 20)
         .frame(height: 90)
-    }
-}
-
-struct CustomTextFieldNote: View {
-    @State private var inputValue = ""
-    
-    var body: some View {
-        VStack {
-            TextField("Bu harcama için notunuz", text: $inputValue)
-                .padding()
-                .background(Color.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 1)
-                        .stroke(Color.black, lineWidth: 1)
-                )
-                .textFieldStyle(PlainTextFieldStyle())
-            
-        }
-        .padding(.trailing, 20)
-        .frame(height: 50)
     }
 }
 

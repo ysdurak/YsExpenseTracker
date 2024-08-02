@@ -9,31 +9,12 @@ import Foundation
 import SwiftUI
 import Firebase
 
-final class LoginScreenViewModel: ObservableObject {
-    @Published var email: String = ""
-    @Published var password: String = ""
-    
-    func signIn(completion: (() -> Void)?){
-        guard !email.isEmpty, !password.isEmpty else {
-            return
-        }
-        Task {
-            do {
-                let returnedUserData = try await AuthenticationManager.shared.createUser(username: email, password: password)
-                
-                print(returnedUserData)
-                completion?()
-            }
-            catch {
-                print(error)            }
-        }
-        
-    }
-}
+
 
 struct LoginScreen: View {
     @StateObject private var viewModel = LoginScreenViewModel()
     @EnvironmentObject  var authViewModel: AuthViewModel
+    @State var showRegisterSheet: Bool = false
     var body: some View {
         NavigationStack {
             ZStack{
@@ -70,12 +51,30 @@ struct LoginScreen: View {
                             }
                         }, label: {
                             Text("Giriş Yap")
+                                .foregroundColor(.black)
                                 .padding()
                                 .overlay(
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(Color.black, lineWidth: 1)
                                 )
                         })
+                        
+                        Spacer()
+                            .frame(height: 20)
+                        
+                        
+                        Button(action: {
+                            showRegisterSheet.toggle()
+                        }) {
+                            Text("Hesabın yok mu ? Kayıt ol")
+                                .customFont(.light, 14)
+                                .foregroundColor(.blue)
+                        }
+                        .sheet(isPresented: $showRegisterSheet) {
+                            RegisterScreen()
+                        }
+                        
+                        
                             
                         
                         

@@ -9,47 +9,51 @@ import Foundation
 import SwiftUI
 
 struct ProfileScreen: View {
+    @StateObject private var viewModel = ProfileViewModel()
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                // User Avatar
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                    .foregroundColor(.orange)
-                    .padding(.top, 20)
-                
-                // User Name
-                Text("Robi")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                // User Phone
-                Text("8967452743")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                // User Email
-                Text("robi123@gmail.com")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                // Profile Options
-                VStack(alignment: .leading, spacing: 20) {
-                    ProfileOptionRow(iconName: "cart.fill", title: "Order History")
-                    ProfileOptionRow(iconName: "house.fill", title: "Shipping Address")
-                    ProfileOptionRow(iconName: "plus.circle.fill", title: "Create Request")
-                    ProfileOptionRow(iconName: "doc.text.fill", title: "Privacy Policy")
-                    ProfileOptionRow(iconName: "gearshape.fill", title: "Settings")
-                    ProfileOptionRow(iconName: "arrowshape.turn.up.left.fill", title: "Log out")
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // User Avatar
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.orange)
+                        .padding(.top, 20)
+                    
+                    // User Name
+                    Text("Ceren")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    // User Email
+                    Text(viewModel.email)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    // Profile Options
+                    VStack(alignment: .leading, spacing: 5) {
+                        NavigationLink(destination: CreateRequestScreen()) {
+                            ProfileOptionRow(iconName: "plus.circle.fill", title: "Create Request")
+                        }
+                        NavigationLink(destination: PrivacyPolicyScreen()) {
+                            ProfileOptionRow(iconName: "doc.text.fill", title: "Privacy Policy")
+                        }
+                        NavigationLink(destination: SettingsScreenEx()) {
+                            ProfileOptionRow(iconName: "gearshape.fill", title: "Settings")
+                        }
+                        NavigationLink(destination: LogoutScreen()) {
+                            ProfileOptionRow(iconName: "arrowshape.turn.up.left.fill", title: "Log out")
+                        }
+                    }
+                    
+                    
+                    Spacer()
                 }
-                .padding(.horizontal)
-                
-                Spacer()
+                .navigationTitle("Profile")
+                .navigationBarTitleDisplayMode(.inline)
+                .padding()
             }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.inline)
-            .padding()
         }
     }
 }
@@ -69,7 +73,8 @@ struct ProfileOptionRow: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, 20)
+        .padding(.horizontal, 20)
         .background(Color.white)
         .cornerRadius(8)
         .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
@@ -79,5 +84,34 @@ struct ProfileOptionRow: View {
 struct ProfileScreen_Previews: PreviewProvider {
     static var previews: some View {
         ProfileScreen()
+    }
+}
+
+
+struct CreateRequestScreen: View {
+    var body: some View {
+        Text("Create Request Screen")
+            .navigationTitle("Create Request")
+    }
+}
+
+struct PrivacyPolicyScreen: View {
+    var body: some View {
+        Text("Privacy Policy Screen")
+            .navigationTitle("Privacy Policy")
+    }
+}
+
+struct SettingsScreenEx: View {
+    var body: some View {
+        Text("Settings Screen")
+            .navigationTitle("Settings")
+    }
+}
+
+struct LogoutScreen: View {
+    var body: some View {
+        Text("Logout Screen")
+            .navigationTitle("Log Out")
     }
 }
