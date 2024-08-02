@@ -41,7 +41,6 @@ struct MainTabView: View {
                     .tag(Tab.favourite)
                     .setUpTab()
                     .environmentObject(authViewModel)
-
                 
                 AddExpenseView(oneTimeSelected: true)
                     .tag(Tab.add)

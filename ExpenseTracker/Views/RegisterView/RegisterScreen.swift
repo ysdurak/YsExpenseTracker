@@ -30,7 +30,7 @@ struct RegisterScreen: View {
                 
                 Spacer()
                 
-                TextField("Kullanıcı Adı", text: $viewModel.email)
+                TextField("E-mail", text: $viewModel.email)
                     .padding()
                     .background(Color.white)
                     .overlay(

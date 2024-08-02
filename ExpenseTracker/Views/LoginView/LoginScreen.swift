@@ -9,12 +9,11 @@ import Foundation
 import SwiftUI
 import Firebase
 
-
-
 struct LoginScreen: View {
     @StateObject private var viewModel = LoginScreenViewModel()
     @EnvironmentObject  var authViewModel: AuthViewModel
     @State var showRegisterSheet: Bool = false
+    @State var showingAlert: Bool = false
     var body: some View {
         NavigationStack {
             ZStack{
@@ -27,7 +26,7 @@ struct LoginScreen: View {
                         .font(.headline)
                     Text("Track Me ile hemen başla !")
                     VStack{
-                        TextField("Kullanıcı Adı", text: $viewModel.email)
+                        TextField("E-mail", text: $viewModel.email)
                             .padding()
                             .background(Color.white)
                             .overlay(
@@ -74,13 +73,19 @@ struct LoginScreen: View {
                             RegisterScreen()
                         }
                         
-                        
-                            
-                        
-                        
                     }
                     .padding(.all, 10)
                     Spacer()
+                }
+            }
+            .alert(isPresented: $showingAlert, content: {
+                Alert(title: Text("Hata"), message: Text(viewModel.errorMes ?? "Bir hata oluştu"), dismissButton: .default(Text("Tamam"), action: {
+                    viewModel.showAlert = false // Reset the alert state if needed
+                }))
+            })
+            .onChange(of: viewModel.showAlert) { newValue in
+                if newValue {
+                    showingAlert = true
                 }
             }
         }
