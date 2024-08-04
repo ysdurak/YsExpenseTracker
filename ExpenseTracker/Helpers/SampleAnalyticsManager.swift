@@ -20,7 +20,7 @@ struct AnimatedGraphData: Identifiable {
 }
 
 struct AnimatedGraphDataManager {
-    static func generateSampleAnalytics(from expense: FetchedResults<Expense>, timeRange: TimeRange) -> [AnimatedGraphData] {
+    static func generateSampleAnalytics(expenses: [ExpenseModel], timeRange: TimeRange) -> [AnimatedGraphData] {
         var sampleAnalytics: [AnimatedGraphData] = []
         
         let currentDate = Date()
@@ -32,13 +32,15 @@ struct AnimatedGraphDataManager {
             startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: currentDate) ?? currentDate
         case .monthly:
             startDate = calendar.date(byAdding: .month, value: -1, to: currentDate) ?? currentDate
+        case .yearly:
+            startDate = calendar.date(byAdding: .year, value: -1, to: currentDate) ?? currentDate
         }
         
-        let filteredExpense = expense.filter { $0.date ?? Date() >= startDate }
+        let filteredExpense = expenses.filter { $0.date ?? Date() >= startDate }
         
         for expense in filteredExpense {
             let date = expense.date ?? Date()
-            let value = expense.value
+            let value = expense.amount
             let animatedGraphData = AnimatedGraphData(date: date, value: value)
             sampleAnalytics.append(animatedGraphData)
         }
@@ -52,6 +54,7 @@ struct AnimatedGraphDataManager {
 enum TimeRange {
     case weekly
     case monthly
+    case yearly
 }
 
 

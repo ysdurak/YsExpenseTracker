@@ -33,18 +33,16 @@ struct ProfileScreen: View {
                     
                     // Profile Options
                     VStack(alignment: .leading, spacing: 5) {
-                        NavigationLink(destination: CreateRequestScreen()) {
-                            ProfileOptionRow(iconName: "plus.circle.fill", title: "Create Request")
+                        NavigationLink(destination: TermsOfServiceView()) {
+                            ProfileOptionRow(iconName: "square.and.pencil", title: "Hizmet Şartları")
                         }
-                        NavigationLink(destination: PrivacyPolicyScreen()) {
-                            ProfileOptionRow(iconName: "doc.text.fill", title: "Privacy Policy")
+                        NavigationLink(destination: PrivacyPolicyView()) {
+                            ProfileOptionRow(iconName: "doc.text.fill", title: "Gizlilik Politikası")
                         }
-                        NavigationLink(destination: SettingsScreenEx()) {
-                            ProfileOptionRow(iconName: "gearshape.fill", title: "Settings")
+                        NavigationLink(destination: SettingsScreen()) {
+                            ProfileOptionRow(iconName: "gearshape.fill", title: "Ayarlar")
                         }
-                        NavigationLink(destination: LogoutScreen()) {
-                            ProfileOptionRow(iconName: "arrowshape.turn.up.left.fill", title: "Log out")
-                        }
+
                     }
                     
                     
@@ -88,30 +86,3 @@ struct ProfileScreen_Previews: PreviewProvider {
 }
 
 
-struct CreateRequestScreen: View {
-    var body: some View {
-        Text("Create Request Screen")
-            .navigationTitle("Create Request")
-    }
-}
-
-struct PrivacyPolicyScreen: View {
-    var body: some View {
-        Text("Privacy Policy Screen")
-            .navigationTitle("Privacy Policy")
-    }
-}
-
-struct SettingsScreenEx: View {
-    var body: some View {
-        Text("Settings Screen")
-            .navigationTitle("Settings")
-    }
-}
-
-struct LogoutScreen: View {
-    var body: some View {
-        Text("Logout Screen")
-            .navigationTitle("Log Out")
-    }
-}

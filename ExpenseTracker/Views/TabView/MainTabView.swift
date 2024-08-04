@@ -27,7 +27,7 @@ struct MainTabView: View {
             
             TabView(selection: $appModel.currentTab) {
                 
-                HomeScreen(sampleAnalytics: AnimatedGraphDataManager.generateSampleAnalytics(from: expense, timeRange: .monthly))
+                HomeScreen()
                     .environmentObject(appModel)
                     .tag(Tab.home)
                     .setUpTab()
@@ -37,7 +37,7 @@ struct MainTabView: View {
                     .setUpTab()
                     .environment(\.managedObjectContext, managedObjContext)
                 
-                SettingsScreen()
+                AddIncomeScreen(oneTimeSelected: true)
                     .tag(Tab.favourite)
                     .setUpTab()
                     .environmentObject(authViewModel)
