@@ -15,6 +15,7 @@ class HomeScreenViewModel: ObservableObject {
     @Published var weeklyExpenses: [ExpenseModel] = []
     @Published var monthlyExpenses: [ExpenseModel] = []
     @Published var yearlyExpenses: [ExpenseModel] = []
+    @Published var topExpenseCategories: [(category: String, total: Double)]?
     
     init() {
         getIncome()
@@ -81,6 +82,8 @@ class HomeScreenViewModel: ObservableObject {
             if let expenses = expenses {
                 DispatchQueue.main.async {
                     self?.monthlyExpenses = expenses
+                    self?.topExpenseCategories = self?.top3Categories(expenses: expenses)
+                    
                 }
             }
         }
@@ -121,4 +124,21 @@ class HomeScreenViewModel: ObservableObject {
             }
         }
     }
+    
+    func top3Categories(expenses: [ExpenseModel]) -> [(category: String, total: Double)] {
+        // kategorilere göre toplam harcama hesaplama
+        var categoryTotals: [String: Double] = [:]
+        for expense in expenses {
+            categoryTotals[expense.category, default: 0] += expense.amount
+        }
+
+        // en yüksek harcama yapılan ilk 3 kategoriyi sıralama ve dönüştürme
+        let top3 = categoryTotals.sorted { $0.value > $1.value }.prefix(3).map { (key, value) in
+            (category: key, total: value)
+        }
+        
+        // sonuçları döndürme
+        return Array(top3)
+    }
+
 }

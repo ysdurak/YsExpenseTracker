@@ -20,7 +20,7 @@ struct RegisterScreen: View {
     
     var body: some View {
         ZStack {
-            Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all) // Background color
+            Color(UIColor.systemBackground).edgesIgnoringSafeArea(.all)
             
             VStack {
                 HStack {

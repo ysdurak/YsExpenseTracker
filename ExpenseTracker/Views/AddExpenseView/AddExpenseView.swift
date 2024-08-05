@@ -20,7 +20,7 @@ struct AddExpenseView: View {
     @State var showSuccessAlert: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = ["Yemek", "Oyun", "Kıyafet", "Market"]
+    let options = ["Yemek", "Oyun", "Kıyafet", "Market", "Teknoloji"]
     @State var oneTimeSelected: Bool
 
     // ExpenseService instance

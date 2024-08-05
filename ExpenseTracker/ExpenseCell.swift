@@ -19,7 +19,7 @@ struct ExpenseCell: View {
                 Text(category)
                     .customFont(.medium)
                 Spacer()
-                Text(amount)
+                Text(amount +  " TL")
                     .customFont(.medium)
             }
             .padding(10)
@@ -127,6 +127,8 @@ func getImage(categoryName: String) -> String! {
         return "fork.knife.circle"
     case "Market":
         return "cart.fill"
+    case "Oyun":
+        return "gamecontroller"
     default:
         return "fork.knife.circle"
     }

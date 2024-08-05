@@ -90,9 +90,11 @@ struct HomeScreen: View {
                             .underline()
                         
                     }
-                    ExpenseCell(imageName: "internaldrive", category: "Teknoloji", amount: "-1800 TL")
-                    ExpenseCell(imageName: "server.rack", category: "Abonelikler", amount: "-782 TL")
-                    ExpenseCell(imageName: "cart", category: "Market", amount: "-300 TL")
+                    if let topCategories = viewModel.topExpenseCategories {
+                        ForEach(0..<topCategories.count) { index in
+                            ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                        }
+                    }
                 }
                 .padding(.top, 10)
                 

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ProfileScreen: View {
     @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -39,7 +40,7 @@ struct ProfileScreen: View {
                         NavigationLink(destination: PrivacyPolicyView()) {
                             ProfileOptionRow(iconName: "doc.text.fill", title: "Gizlilik Politikası")
                         }
-                        NavigationLink(destination: SettingsScreen()) {
+                        NavigationLink(destination: SettingsScreen().environmentObject(authViewModel)) {
                             ProfileOptionRow(iconName: "gearshape.fill", title: "Ayarlar")
                         }
 

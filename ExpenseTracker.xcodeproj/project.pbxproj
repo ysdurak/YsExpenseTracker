@@ -81,6 +81,7 @@
 		B6CF8EDD2C5FB89200C95258 /* Extensions+Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */; };
 		B6CF8EE02C5FCC5F00C95258 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = B6CF8EDF2C5FCC5F00C95258 /* SwiftUICharts */; };
 		B6E072F82C4D34E60080AE8F /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E072F72C4D34E60080AE8F /* Services.swift */; };
+		B6F4C72F2C60CB9300A54A06 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F4C72E2C60CB9300A54A06 /* TestView.swift */; };
 		B6FE99D42BD831A000A38DEB /* Extensions+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */; };
 /* End PBXBuildFile section */
 
@@ -131,6 +132,7 @@
 		B6CF8EDA2C5FB37500C95258 /* AddIncomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIncomeViewModel.swift; sourceTree = "<group>"; };
 		B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Double.swift"; sourceTree = "<group>"; };
 		B6E072F72C4D34E60080AE8F /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
+		B6F4C72E2C60CB9300A54A06 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Date.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -228,6 +230,7 @@
 				B600A0732BB2DC5A00AAB3E6 /* Info.plist */,
 				B696D7572BD286C800D24046 /* ExpenseData.xcdatamodeld */,
 				B6E072F72C4D34E60080AE8F /* Services.swift */,
+				B6F4C72E2C60CB9300A54A06 /* TestView.swift */,
 			);
 			path = ExpenseTracker;
 			sourceTree = "<group>";
@@ -489,6 +492,7 @@
 				B63DF1AA2BB17C5A00F4B592 /* OnboardingScreen.swift in Sources */,
 				B6785EAD2C4BEF9B0045512E /* AuthenticationManager.swift in Sources */,
 				B64C18DB2C5D5DE700D15483 /* RegisterScreenViewModel.swift in Sources */,
+				B6F4C72F2C60CB9300A54A06 /* TestView.swift in Sources */,
 				B6CF8ED62C5FB25B00C95258 /* IncomeModel.swift in Sources */,
 				B63DF1AC2BB17C5A00F4B592 /* Item.swift in Sources */,
 				B6E072F82C4D34E60080AE8F /* Services.swift in Sources */,

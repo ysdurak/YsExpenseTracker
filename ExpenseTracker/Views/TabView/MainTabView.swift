@@ -48,6 +48,7 @@ struct MainTabView: View {
                     .environment(\.managedObjectContext, managedObjContext)
                 
                 ProfileScreen()
+                    .environmentObject(authViewModel)
                     .tag(Tab.profile)
                     .setUpTab()
             }
