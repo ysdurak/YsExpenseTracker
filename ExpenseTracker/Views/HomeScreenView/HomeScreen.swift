@@ -7,10 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SwiftUICharts
 
-import SwiftUI
-import SwiftUICharts
 
 struct HomeScreen: View {
     @StateObject private var viewModel = HomeScreenViewModel()
@@ -18,92 +15,97 @@ struct HomeScreen: View {
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
-        ScrollView {
-            VStack {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Harcamalar")
-                            .fontWeight(.semibold)
-                        Spacer()
-                        Picker("", selection: $currentTab) {
-                            Text("Haftalık").tag("Weekly")
-                            Text("Aylık").tag("Monthly")
-                            Text("Yıllık").tag("Year")
+        NavigationStack{
+            ScrollView {
+                VStack {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Harcamalar")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Picker("", selection: $currentTab) {
+                                Text("Haftalık").tag("Weekly")
+                                Text("Aylık").tag("Monthly")
+                            }
+                            .pickerStyle(.segmented)
+                            .padding(.leading, 20)
                         }
-                        .pickerStyle(.segmented)
-                        .padding(.leading, 20)
-                    }
-                    
-                    Text(" TL")
-                        .font(.largeTitle.bold())
-                    
-                    BarChart(chartData: viewModel.createChartData())
-                        .touchOverlay(chartData: viewModel.createChartData(), specifier: "%.0f")
-                        .xAxisLabels(chartData: viewModel.createChartData())
-                        .yAxisLabels(chartData: viewModel.createChartData())
-                        .infoBox(chartData: viewModel.createChartData())
-                        .headerBox(chartData: viewModel.createChartData())
-                        .legends(chartData: viewModel.createChartData())
-                        .id(viewModel.createChartData().id)
-                        .frame(minWidth: 150, maxWidth: 900, minHeight: 150, idealHeight: 250, maxHeight: 400, alignment: .center)
-                    
-                }
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill((scheme == .dark ? Color.black : Color.white).shadow(.drop(radius: 2)))
-                }
-                
-                VStack {
-                    HStack {
-                        Text("Harcama Özetim")
-                            .customFont(.regular, 24)
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        ExpenseSummary(
-                            imageName: "arrowtriangle.up.circle",
-                            title: "Aylık Gelirlerim",
-                            valueText: viewModel.monthlyIncomeValue.toReadableString() + " ₺",
-                            bgColor: .green.opacity(0.3)
-                        )
-                        Spacer()
-                            .frame(width: 10)
-                        ExpenseSummary(
-                            imageName: "arrowtriangle.down.circle",
-                            title: "Aylık Giderlerim",
-                            valueText: viewModel.monthlyExpenseValue.toReadableString() + " ₺",
-                            bgColor: .red.opacity(0.3)
-                        )
-                    }
-                }
-                .padding(.top, 10)
-                
-                VStack {
-                    HStack {
-                        Text("Son Harcamalarım")
-                            .customFont(.regular, 24)
-                        Spacer()
-                        Text("Tümü")
-                            .customFont(.semiBold, 15)
-                            .underline()
+                        
+                        Text(" TL")
+                            .font(.largeTitle.bold())
+                        
+                        
                         
                     }
-                    if let topCategories = viewModel.topExpenseCategories {
-                        ForEach(0..<topCategories.count) { index in
-                            ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                    .onAppear{
+                        viewModel.getIncome()
+                        viewModel.getExpense()
+                        viewModel.fetchMonthlyExpenses()
+                    }
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill((scheme == .dark ? Color.black : Color.white).shadow(.drop(radius: 2)))
+                    }
+                    
+                    VStack {
+                        HStack {
+                            Text("Harcama Özetim")
+                                .customFont(.regular, 24)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            ExpenseSummary(
+                                imageName: "arrowtriangle.up.circle",
+                                title: "Aylık Gelirlerim",
+                                valueText: viewModel.monthlyIncomeValue.toReadableString() + " ₺",
+                                bgColor: .green.opacity(0.3)
+                            )
+                            Spacer()
+                                .frame(width: 10)
+                            ExpenseSummary(
+                                imageName: "arrowtriangle.down.circle",
+                                title: "Aylık Giderlerim",
+                                valueText: viewModel.monthlyExpenseValue.toReadableString() + " ₺",
+                                bgColor: .red.opacity(0.3)
+                            )
                         }
                     }
+                    .padding(.top, 10)
+                    
+                    VStack {
+                        HStack {
+                            Text("Son Harcamalarım")
+                                .customFont(.regular, 24)
+                            Spacer()
+                            NavigationLink(destination: CategoryScreen()) {
+                                Text("Tümü")
+                                    .customFont(.semiBold, 15)
+                                    .underline()
+                            }
+                            
+                            
+                        }
+                        if let topCategories = viewModel.topExpenseCategories, !topCategories.isEmpty {
+                            ForEach(0..<topCategories.count, id: \.self) { index in
+                                ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                            }
+                        } else {
+                            Text("Kategori yok")
+                                .customFont(.light, 16)
+                                .padding(.top, 10)
+                        }
+                        
+                    }
+                    .padding(.top, 10)
+                    
+                    Color(.white)
+                        .frame(height: 100)
+                    
                 }
-                .padding(.top, 10)
-                
-                Color(.white)
-                    .frame(height: 100)
-                
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .padding()
-        }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .padding()
+            }}
     }
 }

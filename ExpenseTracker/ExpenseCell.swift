@@ -16,6 +16,7 @@ struct ExpenseCell: View {
         ZStack{
             HStack{
                 Image(systemName: getImage(categoryName: category))
+                    .frame(width: 32, height: 32)
                 Text(category)
                     .customFont(.medium)
                 Spacer()
@@ -122,7 +123,7 @@ struct RecentExpensesCell: View {
 func getImage(categoryName: String) -> String! {
     switch categoryName {
     case "Teknoloji":
-        return "laptop.computer.and.iphone"
+        return "laptopcomputer"
     case "Yemek":
         return "fork.knife.circle"
     case "Market":

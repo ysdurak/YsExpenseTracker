@@ -38,12 +38,12 @@ struct MainTabView: View {
                     .environment(\.managedObjectContext, managedObjContext)
                 
                 AddIncomeScreen(oneTimeSelected: true)
-                    .tag(Tab.favourite)
+                    .tag(Tab.addIncome)
                     .setUpTab()
                     .environmentObject(authViewModel)
                 
                 AddExpenseView(oneTimeSelected: true)
-                    .tag(Tab.add)
+                    .tag(Tab.addExpense)
                     .setUpTab()
                     .environment(\.managedObjectContext, managedObjContext)
                 
