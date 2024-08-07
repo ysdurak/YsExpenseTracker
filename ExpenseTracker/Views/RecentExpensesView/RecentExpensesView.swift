@@ -10,7 +10,6 @@ import SwiftUI
 import CoreData
 
 struct RecentExpensesView: View {
-    
     @StateObject private var viewModel = RecentExpensesViewModel()
     @State var expenses: [ExpenseModel] = []
     
@@ -19,12 +18,14 @@ struct RecentExpensesView: View {
             NavigationView {
                 List {
                     ForEach(viewModel.expenses, id: \.id) { expense in
-                        RecentExpensesCell(
-                            date: expense.date ,
-                            category: expense.category ,
-                            note: expense.note,
-                            value: expense.amount
-                        )
+                        NavigationLink(destination: ExpenseDetailView(expense: expense)) {
+                            RecentExpensesCell(
+                                date: expense.date,
+                                category: expense.category,
+                                note: expense.note,
+                                value: expense.amount
+                            )
+                        }
                         .swipeActions(allowsFullSwipe: true) {
                             Button {
                                 viewModel.deleteExpense(id: expense.id ?? "")
@@ -39,20 +40,15 @@ struct RecentExpensesView: View {
                 .navigationBarTitleDisplayMode(.large)
                 .listStyle(PlainListStyle())
             }
-            
         }
-        .onAppear{
+        .onAppear {
             viewModel.fetchRecentExpenses()
         }
-
     }
     
-    private func deleteExpense(_ expense: Expense) {
-        withAnimation{
+    private func deleteExpense(_ expense: ExpenseModel) {
+        withAnimation {
+            // Deletion logic here
         }
     }
-
 }
-
-
-

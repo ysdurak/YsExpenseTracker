@@ -9,26 +9,38 @@ import Foundation
 import SwiftUI
 import Charts
 
-
 struct CategoryScreen: View {
     @StateObject private var viewModel = CategoryViewModel()
+    @State var isChartSmall = false
+    @State var showLegend = true
+    
     var body: some View {
-        NavigationStack{
-        ZStack{
+        NavigationStack {
             VStack {
                 Text("Kategorilere Göre Harcamalar")
                     .customFont(.black, 16)
                     .padding()
                 
                 if let categoryExpenses = viewModel.categoryExpenses {
-                    
-                    PieChartView(data: categoryExpenses)
-                        .frame(height: 300)
+                    PieChartView(data: categoryExpenses, showLegend: $showLegend)
+                        .frame(height: isChartSmall ? 100 : 300)
                         .padding(.bottom, 10)
+                        .padding(.horizontal, 10)
                     
                     ScrollView {
-                        Color(.white)
-                            .frame(height: 10)
+                        GeometryReader { geo in
+                            Color.clear
+                                .frame(height: 10) // Set a fixed height to create a trigger point
+                                .onChange(of: geo.frame(in: .global).minY) { newValue in
+                                    withAnimation {
+                                        print(newValue)
+                                        isChartSmall = newValue < 300
+                                        showLegend = newValue > 300
+                                    }
+                                }
+                        }
+                        .frame(height: 10) // Ensure GeometryReader has a frame
+                        
                         ForEach(categoryExpenses, id: \.category) { categoryExpense in
                             NavigationLink(
                                 destination: CategoryDetailView(category: categoryExpense.category)
@@ -37,31 +49,27 @@ struct CategoryScreen: View {
                                     .padding(.horizontal, 10)
                                     .foregroundColor(.black)
                             }
-                            
                         }
-                        Color(.white)
-                            .frame(height: 50)
                     }
-                    
                 } else {
                     ProgressView()
                 }
                 
-                
                 Spacer()
-                
+            }
+            .onAppear {
+                viewModel.fetchMonthlyExpenses()
             }
         }
-        .onAppear {
-            viewModel.fetchMonthlyExpenses()
-        }}
     }
 }
 
 struct PieChartView: View {
     var data: [(category: String, total: Double)]
+    @Binding var showLegend: Bool
     
     var body: some View {
+        
         Chart(data, id: \.category) { item in
             SectorMark(
                 angle: .value("Total", item.total),
@@ -70,6 +78,7 @@ struct PieChartView: View {
             )
             .foregroundStyle(by: .value("Category", item.category))
         }
+        .chartLegend(showLegend ? .visible : .hidden)
         .chartLegend(position: .bottom, alignment: .center, spacing: 30)
     }
 }

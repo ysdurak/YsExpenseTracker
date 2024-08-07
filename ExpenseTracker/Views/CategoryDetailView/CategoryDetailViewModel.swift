@@ -15,7 +15,7 @@ class CategoryDetailViewModel: ObservableObject {
     func fetchExpenses(for category: String) {
         self.currentCategory = category
         Services.shared.getExpensesByCategory(category: category) { expenses, error in
-            self.expenses = expenses
+            self.expenses = expenses?.sortExpensesDescending()
         }
     }
     

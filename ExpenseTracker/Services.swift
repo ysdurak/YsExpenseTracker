@@ -79,6 +79,20 @@ class Services {
             }
         }
     }
+    
+    func updateExpense(_ expense: ExpenseModel, completion: @escaping (Error?) -> Void) {
+        guard let expenseID = expense.id else {
+            completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Expense ID not found"]))
+            return
+        }
+        
+        guard let expensesCollection = userExpensesCollection() else {
+            completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        
+        expensesCollection.document(expenseID).updateData(expense.toDictionary(), completion: completion)
+    }
 
     // Get Expenses by Category
     func getExpensesByCategory(category: String, completion: @escaping ([ExpenseModel]?, Error?) -> Void) {

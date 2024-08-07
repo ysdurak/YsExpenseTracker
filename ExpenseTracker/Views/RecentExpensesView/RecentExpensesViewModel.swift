@@ -19,7 +19,7 @@ class RecentExpensesViewModel: ObservableObject {
     func fetchRecentExpenses() {
         Services.shared.getAllExpenses { [weak self] (expenses, error) in
             if let expenses = expenses {
-                    self?.expenses = expenses
+                self?.expenses = expenses.sortExpensesDescending()
             } else if let error = error {
                 print("Failed to fetch expenses: \(error.localizedDescription)")
             }

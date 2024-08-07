@@ -15,69 +15,108 @@ class HomeScreenViewModel: ObservableObject {
     @Published var monthlyExpenses: [ExpenseModel] = []
     @Published var yearlyExpenses: [ExpenseModel] = []
     @Published var topExpenseCategories: [(category: String, total: Double)]?
+    @Published var isLoading: Bool = true
     
     init() {
-        getIncome()
-        getExpense()
-        fetchMonthlyExpenses()
+        loadData()
     }
     
-
-
-    func fetchWeeklyExpenses(completion: (() -> Void)) {
+    func loadData() {
+        isLoading = true
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        fetchWeeklyExpenses {
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        fetchMonthlyExpenses {
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        fetchYearlyExpenses {
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        getIncome {
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.enter()
+        getExpense {
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.isLoading = false
+        }
+    }
+    
+    func fetchWeeklyExpenses(completion: @escaping () -> Void) {
         Services.shared.getWeeklyExpenses { [weak self] expenses, error in
-            if let expenses = expenses {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if let expenses = expenses {
                     self?.weeklyExpenses = expenses
                 }
+                completion()
             }
         }
     }
     
-    func fetchMonthlyExpenses() {
+    func fetchMonthlyExpenses(completion: @escaping () -> Void) {
         Services.shared.getMonthlyExpenses { [weak self] expenses, error in
-            if let expenses = expenses {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if let expenses = expenses {
                     self?.monthlyExpenses = expenses
                     self?.topExpenseCategories = self?.top3Categories(expenses: expenses)
-                    
                 }
+                completion()
             }
         }
     }
     
-    func fetchYearlyExpenses() {
+    func fetchYearlyExpenses(completion: @escaping () -> Void) {
         Services.shared.getYearlyExpenses { [weak self] expenses, error in
-            if let expenses = expenses {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if let expenses = expenses {
                     self?.yearlyExpenses = expenses
                 }
+                completion()
             }
         }
     }
     
-    func getIncome() {
+    func getIncome(completion: @escaping () -> Void) {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
         Services.shared.getMonthlyIncome(year: currentYear, month: currentMonth) { income, error in
-            if let error {
-                print("Error")
-            } else {
-                self.monthlyIncomeValue = income
-                print(income)
+            DispatchQueue.main.async {
+                if let error {
+                    print("Error: \(error)")
+                } else {
+                    self.monthlyIncomeValue = income
+                    print(income)
+                }
+                completion()
             }
         }
     }
     
-    func getExpense() {
+    func getExpense(completion: @escaping () -> Void) {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
         Services.shared.getMonthlyExpense(year: currentYear, month: currentMonth) { expense, error in
-            if let error {
-                print("Error")
-            } else {
-                self.monthlyExpenseValue = expense
-                print(expense)
+            DispatchQueue.main.async {
+                if let error {
+                    print("Error: \(error)")
+                } else {
+                    self.monthlyExpenseValue = expense
+                    print(expense)
+                }
+                completion()
             }
         }
     }
@@ -97,5 +136,5 @@ class HomeScreenViewModel: ObservableObject {
         // sonuçları döndürme
         return Array(top3)
     }
-
 }
+

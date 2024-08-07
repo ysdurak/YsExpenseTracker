@@ -10,7 +10,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
-struct ExpenseModel {
+struct ExpenseModel: Identifiable {
     var id: String?
     var date: Date
     var title: String
@@ -18,7 +18,7 @@ struct ExpenseModel {
     var amount: Double
     var category: String
     
-    init(id: String? = nil, date: Date, title: String, note: String, amount: Double, category: String) {
+    init(id: String = UUID().uuidString, date: Date, title: String, note: String, amount: Double, category: String) {
         self.id = id
         self.date = date
         self.title = title
@@ -52,5 +52,13 @@ struct ExpenseModel {
             "amount": amount,
             "category": category
         ]
+    }
+}
+
+
+extension [ExpenseModel] {
+    func sortExpensesDescending() -> [ExpenseModel] {
+        let sortedExpensesDescending = self.sorted(by: { $0.date > $1.date })
+        return sortedExpensesDescending
     }
 }

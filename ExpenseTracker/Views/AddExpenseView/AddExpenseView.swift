@@ -15,22 +15,19 @@ struct AddExpenseView: View {
     @State var category: String = ""
     @State var date: Date = Date()
     @State var note: String = ""
-    @State var value: String = "0"
+    @State var value: String = ""
     @State var showAlert: Bool = false
     @State var showSuccessAlert: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = ["Yemek", "Oyun", "Kıyafet", "Market", "Teknoloji"]
+    let options = ["Yemek", "Oyun", "Kıyafet", "Market", "Teknoloji", "Fatura", "Eğlence", "Tatil", "Kira", "Abonelikler"]
     @State var oneTimeSelected: Bool
 
-    // ExpenseService instance
-    
     var body: some View {
         ZStack(alignment: .leading) {
             ScrollView {
                 VStack {
                     VStack(alignment: .leading, spacing: 5) {
-                        
                         Text("Harcama Detayları")
                             .font(.headline)
                             .frame(alignment: .leading)
@@ -87,6 +84,12 @@ struct AddExpenseView: View {
                                             .stroke(Color.black, lineWidth: 1)
                                     )
                                     .keyboardType(.decimalPad)
+                                    .onChange(of: value) { newValue in
+                                        // Eğer text boşsa, varsayılan olarak "" göster
+                                        if newValue.isEmpty {
+                                            value = ""
+                                        }
+                                    }
                             }
                             .padding(.trailing, 20)
                             .frame(height: 90)
