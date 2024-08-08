@@ -11,6 +11,7 @@ import Charts
 
 struct HomeScreen: View {
     @StateObject private var viewModel = HomeScreenViewModel()
+    @EnvironmentObject var appModel: AppViewModel
     @State private var currentTab: String = "Monthly"
     @Environment(\.colorScheme) private var scheme
     
@@ -94,12 +95,33 @@ struct HomeScreen: View {
                             }
                             if let topCategories = viewModel.topExpenseCategories, !topCategories.isEmpty {
                                 ForEach(0..<topCategories.count, id: \.self) { index in
-                                    ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                                    NavigationLink(
+                                        destination: CategoryDetailView(category: topCategories[index].category)
+                                    ) {
+                                        ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                                            .padding(.horizontal, 10)
+                                            .foregroundColor(.black)
+                                    }
+                                
                                 }
+                                
                             } else {
-                                Text("Kategori yok")
+                                Text("Harcama bulunamadı")
                                     .customFont(.light, 16)
-                                    .padding(.top, 10)
+                                    .padding(.bottom, 10)
+                                
+                                Button(action: {
+                                    // Tab bar'da 3. sekmeye gitme işlemini gerçekleştir
+                                    // Örneğin, bu 3. sekmeyi seçmek için bir Binding kullanabilirsin
+                                    appModel.currentTab = .addExpense
+                                }) {
+                                    Text("Harcama Ekle")
+                                        .customFont(.bold, 18)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .background(Color.blue)
+                                        .cornerRadius(10)
+                                }
                             }
                         }
                         .padding(.top, 10)

@@ -9,9 +9,11 @@ import Foundation
 import SwiftUI
 
 
-struct ExpenseDetailView: View {
+struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
     @State var expense: ExpenseModel
     @State private var isEditing = false
+    @ObservedObject var viewModel: ViewModel
+    let source: EditSource
     
     var body: some View {
         ScrollView {
@@ -50,7 +52,7 @@ struct ExpenseDetailView: View {
             }
         }
         .sheet(isPresented: $isEditing) {
-            EditExpenseView(expense: $expense)
+            EditExpenseView(expense: $expense, viewModel: self.viewModel, source: self.source)
         }
     }
     

@@ -7,31 +7,28 @@
 
 import Foundation
 
-
 final class RegisterScreenViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var errorMes: String = ""
-    @Published var showError: Bool = false
-    @Published var showSuccess: Bool = false
-    
-    func registerUser(completion: (() -> Void)?){
+
+    func registerUser(completion: @escaping (Bool) -> Void) {
         guard !email.isEmpty, !password.isEmpty else {
+            self.errorMes = "Email veya şifre boş olamaz."
+            completion(false) // Failure
             return
         }
-        Task {
-            do {
-                let returnedUserData = try await AuthenticationManager.shared.createUser(username: email, password: password)
-                showSuccess = true
-                print(returnedUserData)
-                completion?()
+
+        AuthenticationManager.shared.createUser(username: email, password: password) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let userData):
+                    completion(true) // Success
+                case .failure(let error):
+                    self?.errorMes = error.localizedDescription
+                    completion(false) // Failure
+                }
             }
-            catch {
-                errorMes = error.localizedDescription
-                showError = true
-                print(error)            }
         }
-        
     }
-    
 }

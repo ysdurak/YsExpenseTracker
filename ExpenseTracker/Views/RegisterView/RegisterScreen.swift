@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+enum ActiveAlert {
+    case first, second
+}
+
 struct RegisterScreen: View {
     @StateObject private var viewModel = RegisterScreenViewModel()
     @Environment(\.presentationMode) var presentationMode
@@ -17,6 +21,7 @@ struct RegisterScreen: View {
     @State var showTermsOfService = false
     @State private var acceptedPrivacyPolicy = false
     @State private var acceptedTermsOfService = false
+    @State private var activeAlert: ActiveAlert = .first
     
     var body: some View {
         ZStack {
@@ -104,8 +109,14 @@ struct RegisterScreen: View {
                     .frame(height: 20)
                 
                 Button(action: {
-                    viewModel.registerUser {
-                        // Perform registration
+                    viewModel.registerUser { succes in
+                        if succes {
+                            activeAlert = .first
+                        }
+                        else {
+                            activeAlert = .second
+                        }
+                        showSuccess = true
                     }
                 }, label: {
                     Text("Kayıt Ol")
@@ -119,8 +130,6 @@ struct RegisterScreen: View {
                 })
                 
                 
-                
-                
                 Spacer()
             }
         }
@@ -130,32 +139,24 @@ struct RegisterScreen: View {
         .sheet(isPresented: $showTermsOfService, content: {
             TermsOfServiceView()
         })
-        .alert(isPresented: $showSuccess, content: {
-            Alert(title: Text("Kayıt Başarılı"), message: Text("Başarıyla kayıt olundu! Lütfen giriş yapınız."), dismissButton: .default(Text("Tamam"), action: {
-                self.presentationMode.wrappedValue.dismiss()
-                viewModel.showSuccess = false // Reset the alert state if needed
-            }))
-        })
-        .onChange(of: viewModel.showSuccess) { newValue in
-            if newValue {
-                showSuccess = true
+        .alert(isPresented: $showSuccess) {
+            switch activeAlert {
+            case .first:
+                return             Alert(title: Text("Kayıt Başarılı"), message: Text("Başarıyla kayıt olundu! Lütfen giriş yapınız."), dismissButton: .default(Text("Tamam"), action: {
+                    self.presentationMode.wrappedValue.dismiss()
+                    showSuccess = false // Reset the alert state if needed
+                }))
+            case .second:
+                return             Alert(title: Text("Hata"), message: Text(viewModel.errorMes), dismissButton: .default(Text("Tamam"), action: {
+                    showingError = false // Reset the alert state if needed
+                }))
             }
+            
+            
+            
         }
-        .alert(isPresented: $showingError, content: {
-            Alert(title: Text("Hata"), message: Text(viewModel.errorMes ?? "Bir hata oluştu"), dismissButton: .default(Text("Tamam"), action: {
-                viewModel.showError = false // Reset the alert state if needed
-            }))
-        })
-        .onChange(of: viewModel.showError) { newValue in
-            if newValue {
-                showingError = true
-            }
-        }
+        
     }
-}
-
-#Preview {
-    RegisterScreen()
 }
 
 

@@ -12,10 +12,15 @@ final class SettingsScreenViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = true
 
     func signOut(authViewModel: AuthViewModel) {
-        do {
-            try authViewModel.signOut()
-        } catch {
-            print(error)
+        AuthenticationManager.shared.signOut { result in
+            switch result {
+            case .success(let success):
+                authViewModel.signOut { result in
+                    
+                }
+            case .failure(let failure): break
+                
+            }
         }
     }
 }

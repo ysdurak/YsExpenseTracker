@@ -8,14 +8,35 @@
 import Foundation
 import SwiftUI
 
-struct EditExpenseView: View {
+struct EditExpenseView<ViewModel: ExpenseHandling>: View {
     @Binding var expense: ExpenseModel
     @Environment(\.presentationMode) var presentationMode
-    
+    @ObservedObject var viewModel: ViewModel
+    let categories = Defaults.shared.options
+    @State var selectedOptionIndex: Int
+    let source: EditSource
+    var firstCategory: String
+
+    init(expense: Binding<ExpenseModel>, viewModel: ViewModel, source: EditSource) {
+        self._expense = expense
+        self.viewModel = viewModel
+        self.source = source
+        _selectedOptionIndex = State(initialValue: categories.firstIndex(of: expense.wrappedValue.category) ?? 0)
+        self.firstCategory = expense.wrappedValue.category
+    }
     var body: some View {
         Form {
             Section(header: Text("Kategori")) {
-                TextField("Kategori", text: $expense.category)
+                Picker("Kategori", selection: $selectedOptionIndex) {
+                    ForEach(0..<categories.count, id: \.self) { index in
+                        Text(categories[index])
+                            .tag(index)
+                    }
+                }
+                .pickerStyle(MenuPickerStyle())
+                .onChange(of: selectedOptionIndex) { newIndex in
+                    expense.category = categories[newIndex]
+                }
             }
             
             Section(header: Text("Not")) {
@@ -27,17 +48,32 @@ struct EditExpenseView: View {
                     .keyboardType(.decimalPad)
             }
             
+            Section(header: Text("Harcama Tarihi")) {
+                DatePicker("Harcama Tarihi", selection: $expense.date, displayedComponents: .date)
+            }
+            
             Button("Kaydet") {
                 Services.shared.updateExpense(expense) { error in
                     if let error = error {
                         print("Error updating expense: \(error.localizedDescription)")
                     } else {
+                        switch source {
+                        case .recentExpenses:
+                            viewModel.fetchRecentExpenses()
+                        case .category:
+                            viewModel.fetchExpenses(for: firstCategory)
+                        }
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
-                presentationMode.wrappedValue.dismiss()
             }
         }
         .navigationTitle("Harcama Düzenle")
     }
+}
+
+
+enum EditSource {
+    case recentExpenses
+    case category
 }

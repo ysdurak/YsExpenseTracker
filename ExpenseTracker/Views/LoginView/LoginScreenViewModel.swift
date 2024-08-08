@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 final class LoginScreenViewModel: ObservableObject {
     @Published var email: String = ""
@@ -13,24 +14,27 @@ final class LoginScreenViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var errorMes: String = ""
     
-    func signIn(completion: (() -> Void)?){
+    func signIn(completion: (() -> Void)? = nil) {
         guard !email.isEmpty, !password.isEmpty else {
+            errorMes = "Email veya şifre boş olamaz."
+            showAlert = true
             return
         }
-        Task {
-            do {
-                let returnedUserData = try await AuthenticationManager.shared.signIn(username: email, password: password)
-                
-                print(returnedUserData)
-                completion?()
-            }
-            catch {
-                showAlert = true
-                errorMes = error.localizedDescription
+        
+        AuthenticationManager.shared.signIn(username: email, password: password) { [weak self] result in
+            switch result {
+            case .success(let userData):
+                print(userData)
+                DispatchQueue.main.async {
+                    completion?()
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.errorMes = error.localizedDescription
+                    self?.showAlert = true
+                }
                 print(error)
             }
         }
     }
 }
-
-

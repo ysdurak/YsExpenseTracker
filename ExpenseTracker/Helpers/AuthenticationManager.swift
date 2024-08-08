@@ -7,9 +7,11 @@
 
 import Foundation
 import Firebase
+// AuthenticationManager.swift
+import Foundation
+import Firebase
 
-struct AuthDataResultModel{
-    
+struct AuthDataResultModel {
     let uid: String?
     let email: String?
     
@@ -21,43 +23,80 @@ struct AuthDataResultModel{
 
 final class AuthenticationManager {
     static let shared = AuthenticationManager()
-    private init() {
-        
-    }
+    private init() {}
     
-    func signIn(username: String, password: String) async throws -> AuthDataResultModel {
-        let authDataResult = try await Auth.auth().signIn(withEmail: username, password: password)
-        return AuthDataResultModel(user: authDataResult.user)
-    }
-    
-    func createUser(username: String, password: String) async throws -> AuthDataResultModel {
-        let authDataResult = try await Auth.auth().createUser(withEmail: username, password: password)
-        return AuthDataResultModel(user: authDataResult.user)
-    }
-    
-    func getAuthenticatedUser() throws -> AuthDataResultModel {
-        guard let user = Auth.auth().currentUser else {
-            throw URLError(.badServerResponse)
+    func signIn(username: String, password: String, completion: @escaping (Result<AuthDataResultModel, Error>) -> Void) {
+        Auth.auth().signIn(withEmail: username, password: password) { result, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let user = result?.user {
+                completion(.success(AuthDataResultModel(user: user)))
+            }
         }
-        return AuthDataResultModel(user: user)
     }
     
-    func signOut() throws  {
-        try Auth.auth().signOut()
+    func createUser(username: String, password: String, completion: @escaping (Result<AuthDataResultModel, Error>) -> Void) {
+        Auth.auth().createUser(withEmail: username, password: password) { result, error in
+            if let error = error {
+                completion(.failure(error))
+            } else if let user = result?.user {
+                completion(.success(AuthDataResultModel(user: user)))
+            }
+        }
+    }
+    
+    func getAuthenticatedUser(completion: @escaping (Result<AuthDataResultModel, Error>) -> Void) {
+        if let user = Auth.auth().currentUser {
+            completion(.success(AuthDataResultModel(user: user)))
+        } else {
+            completion(.failure(URLError(.badServerResponse)))
+        }
+    }
+    
+    func signOut(completion: @escaping (Result<Void, Error>) -> Void) {
+        do {
+            try Auth.auth().signOut()
+            completion(.success(()))
+        } catch {
+            completion(.failure(error))
+        }
     }
 }
-    
+
+// AuthViewModel.swift
+import Foundation
+import Combine
 
 class AuthViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
     
     init() {
-        let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-        self.isAuthenticated = authUser != nil
+        checkAuthentication()
     }
     
-    func signOut() throws {
-        try AuthenticationManager.shared.signOut()
-        self.isAuthenticated = false
+
+    func checkAuthentication() {
+        AuthenticationManager.shared.getAuthenticatedUser { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.isAuthenticated = user.uid != nil
+            case .failure:
+                self?.isAuthenticated = false
+            }
+        }
+    }
+    
+    
+    
+    func signOut(completion: @escaping (Result<Void, Error>) -> Void) {
+        AuthenticationManager.shared.signOut { result in
+            switch result {
+            case .success:
+                self.isAuthenticated = false
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 }

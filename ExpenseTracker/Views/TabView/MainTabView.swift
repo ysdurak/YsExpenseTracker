@@ -35,7 +35,6 @@ struct MainTabView: View {
                 RecentExpensesView()
                     .tag(Tab.cart)
                     .setUpTab()
-                    .environment(\.managedObjectContext, managedObjContext)
                 
                 AddIncomeScreen(oneTimeSelected: true)
                     .tag(Tab.addIncome)
@@ -57,7 +56,7 @@ struct MainTabView: View {
                 .offset(y: UIScreen.main.bounds.height / 2 - 50)
         }
         .onAppear {
-            authViewModel.isAuthenticated = (try? AuthenticationManager.shared.getAuthenticatedUser()) != nil
+            authViewModel.checkAuthentication()
         }
         .fullScreenCover(isPresented: Binding(
             get: { !authViewModel.isAuthenticated },

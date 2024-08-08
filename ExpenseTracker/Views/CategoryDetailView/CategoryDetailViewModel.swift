@@ -8,15 +8,22 @@
 import Foundation
 
 
-class CategoryDetailViewModel: ObservableObject {
-    @Published var expenses: [ExpenseModel]?
+class CategoryDetailViewModel: ObservableObject, ExpenseHandling {
+    @Published var expenses: [ExpenseModel] = []
+    
     private var currentCategory: String?
     
     func fetchExpenses(for category: String) {
         self.currentCategory = category
         Services.shared.getExpensesByCategory(category: category) { expenses, error in
-            self.expenses = expenses?.sortExpensesDescending()
+            if let categoryExpenses = expenses {
+                self.expenses = categoryExpenses.sortExpensesDescending()
+            }
         }
+    }
+    
+    func fetchRecentExpenses() {
+        
     }
     
     func deleteExpense(id: String) {
@@ -24,10 +31,10 @@ class CategoryDetailViewModel: ObservableObject {
             if let error = error {
                 print("Failed to delete expense: \(error.localizedDescription)")
             } else {
-                self.fetchExpenses(for: self.currentCategory ?? "")
+                if let category = self.currentCategory {
+                    self.fetchExpenses(for: category)
+                }
             }
         }
     }
-    
 }
-

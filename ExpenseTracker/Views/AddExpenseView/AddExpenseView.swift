@@ -20,7 +20,7 @@ struct AddExpenseView: View {
     @State var showSuccessAlert: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = ["Yemek", "Oyun", "Kıyafet", "Market", "Teknoloji", "Fatura", "Eğlence", "Tatil", "Kira", "Abonelikler"]
+    let options = Defaults.shared.options
     @State var oneTimeSelected: Bool
 
     var body: some View {
