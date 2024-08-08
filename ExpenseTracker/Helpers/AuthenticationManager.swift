@@ -69,6 +69,7 @@ import Combine
 
 class AuthViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
+    @Published var isLoading: Bool = false
     
     init() {
         checkAuthentication()
@@ -80,10 +81,15 @@ class AuthViewModel: ObservableObject {
             switch result {
             case .success(let user):
                 self?.isAuthenticated = user.uid != nil
+                self?.getCategories()
             case .failure:
                 self?.isAuthenticated = false
             }
         }
+    }
+    
+    func getCategories(){
+        
     }
     
     

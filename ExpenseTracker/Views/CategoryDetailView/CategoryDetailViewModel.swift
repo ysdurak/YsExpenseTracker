@@ -9,11 +9,15 @@ import Foundation
 
 
 class CategoryDetailViewModel: ObservableObject, ExpenseHandling {
+    func fetchExpenses(for category: String) {
+        
+    }
+    
     @Published var expenses: [ExpenseModel] = []
     
-    private var currentCategory: String?
+    private var currentCategory: CategoryModel?
     
-    func fetchExpenses(for category: String) {
+    func fetchExpenses(for category: CategoryModel) {
         self.currentCategory = category
         Services.shared.getExpensesByCategory(category: category) { expenses, error in
             if let categoryExpenses = expenses {

@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 struct CategoryDetailView: View {
-    let category: String
+    let category: CategoryModel
     @StateObject var viewModel = CategoryDetailViewModel()
     
     var body: some View {
         ZStack{
             VStack {
-                Text("Kategori: \(category)")
+                Text("Kategori: \(category.title)")
                     .font(.headline)
                 
                 List {
@@ -24,7 +24,7 @@ struct CategoryDetailView: View {
                         ) {
                             RecentExpensesCell(
                                 date: expense.date,
-                                category: expense.category,
+                                category: expense.category.title,
                                 note: expense.note,
                                 value: expense.amount
                             )
@@ -50,6 +50,4 @@ struct CategoryDetailView: View {
 }
 
 
-#Preview {
-    CategoryDetailView(category: "Teknoloji")
-}
+

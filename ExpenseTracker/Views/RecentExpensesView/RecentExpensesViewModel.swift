@@ -24,7 +24,7 @@ class RecentExpensesViewModel: ObservableObject, ExpenseHandling {
         } else {
             return expenses.filter { expense in
                 expense.note.lowercased().contains(searchText.lowercased()) ||
-                expense.category.lowercased().contains(searchText.lowercased())
+                expense.category.title.lowercased().contains(searchText.lowercased())
             }
         }
     }

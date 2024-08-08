@@ -16,9 +16,9 @@ struct ExpenseModel: Identifiable {
     var title: String
     var note: String
     var amount: Double
-    var category: String
+    var category: CategoryModel
     
-    init(id: String = UUID().uuidString, date: Date, title: String, note: String, amount: Double, category: String) {
+    init(id: String = UUID().uuidString, date: Date, title: String, note: String, amount: Double, category: CategoryModel) {
         self.id = id
         self.date = date
         self.title = title
@@ -33,7 +33,8 @@ struct ExpenseModel: Identifiable {
               let title = data["title"] as? String,
               let note = data["note"] as? String,
               let amount = data["amount"] as? Double,
-              let category = data["category"] as? String else {
+              let categoryData = data["category"] as? [String: Any],
+              let category = CategoryModel(data: categoryData) else {
             return nil
         }
         self.id = document.documentID
@@ -43,6 +44,7 @@ struct ExpenseModel: Identifiable {
         self.amount = amount
         self.category = category
     }
+
     
     func toDictionary() -> [String: Any] {
         return [
@@ -50,7 +52,7 @@ struct ExpenseModel: Identifiable {
             "title": title,
             "note": note,
             "amount": amount,
-            "category": category
+            "category": category.toDictionary()
         ]
     }
 }

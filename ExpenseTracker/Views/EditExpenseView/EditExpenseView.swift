@@ -12,7 +12,7 @@ struct EditExpenseView<ViewModel: ExpenseHandling>: View {
     @Binding var expense: ExpenseModel
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: ViewModel
-    let categories = Defaults.shared.options
+    let categories = Defaults.shared.categories
     @State var selectedOptionIndex: Int
     let source: EditSource
     var firstCategory: String
@@ -22,14 +22,14 @@ struct EditExpenseView<ViewModel: ExpenseHandling>: View {
         self.viewModel = viewModel
         self.source = source
         _selectedOptionIndex = State(initialValue: categories.firstIndex(of: expense.wrappedValue.category) ?? 0)
-        self.firstCategory = expense.wrappedValue.category
+        self.firstCategory = expense.wrappedValue.category.identifier
     }
     var body: some View {
         Form {
             Section(header: Text("Kategori")) {
                 Picker("Kategori", selection: $selectedOptionIndex) {
                     ForEach(0..<categories.count, id: \.self) { index in
-                        Text(categories[index])
+                        Text(categories[index].title)
                             .tag(index)
                     }
                 }

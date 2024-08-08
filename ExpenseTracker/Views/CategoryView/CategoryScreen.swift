@@ -22,7 +22,7 @@ struct CategoryScreen: View {
                     .padding()
                 
                 if let categoryExpenses = viewModel.categoryExpenses {
-                    PieChartView(data: categoryExpenses, showLegend: $showLegend)
+                    PieChartView(data: categoryExpenses , showLegend: $showLegend)
                         .frame(height: isChartSmall ? 100 : 300)
                         .padding(.bottom, 10)
                         .padding(.horizontal, 10)
@@ -45,7 +45,7 @@ struct CategoryScreen: View {
                             NavigationLink(
                                 destination: CategoryDetailView(category: categoryExpense.category)
                             ) {
-                                ExpenseCell(imageName: "car", category: categoryExpense.category, amount: categoryExpense.total.toReadableString())
+                                ExpenseCell(imageName: "car", category: categoryExpense.category.title, amount: categoryExpense.total.toReadableString())
                                     .padding(.horizontal, 10)
                                     .foregroundColor(.black)
                             }
@@ -65,7 +65,7 @@ struct CategoryScreen: View {
 }
 
 struct PieChartView: View {
-    var data: [(category: String, total: Double)]
+    var data: [(category: CategoryModel, total: Double)]
     @Binding var showLegend: Bool
     
     var body: some View {
@@ -76,7 +76,7 @@ struct PieChartView: View {
                 innerRadius: .ratio(0.5),
                 angularInset: 1
             )
-            .foregroundStyle(by: .value("Category", item.category))
+            .foregroundStyle(by: .value("Category", item.category.title))
         }
         .chartLegend(showLegend ? .visible : .hidden)
         .chartLegend(position: .bottom, alignment: .center, spacing: 30)

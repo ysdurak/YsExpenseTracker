@@ -23,12 +23,20 @@ final class RegisterScreenViewModel: ObservableObject {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let userData):
-                    completion(true) // Success
+                    Services.shared.addCategories(Defaults.shared.categories) { error in
+                        if let error = error {
+                            print("Error adding categories: \(error)")
+                            completion(false) // Failure
+                        } else {
+                            completion(true) // Success
+                        }
+                    }
                 case .failure(let error):
                     self?.errorMes = error.localizedDescription
                     completion(false) // Failure
                 }
             }
         }
+
     }
 }

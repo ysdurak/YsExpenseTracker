@@ -61,7 +61,17 @@ class Services {
             completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
             return
         }
+        
         expensesCollection.addDocument(data: expense.toDictionary(), completion: completion)
+    }
+    
+    func addIncome(_ income: IncomeModel, completion: @escaping (Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        let incomeCollection = db.collection("users").document(userID).collection("incomes")
+        incomeCollection.addDocument(data: income.toDictionary(), completion: completion)
     }
 
     // Get All Expenses
@@ -95,12 +105,12 @@ class Services {
     }
 
     // Get Expenses by Category
-    func getExpensesByCategory(category: String, completion: @escaping ([ExpenseModel]?, Error?) -> Void) {
+    func getExpensesByCategory(category: CategoryModel, completion: @escaping ([ExpenseModel]?, Error?) -> Void) {
         guard let expensesCollection = userExpensesCollection() else {
             completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
             return
         }
-        expensesCollection.whereField("category", isEqualTo: category).getDocuments { (querySnapshot, error) in
+        expensesCollection.whereField("category.identifier", isEqualTo: category.identifier).getDocuments { (querySnapshot, error) in
             if let error = error {
                 completion(nil, error)
             } else {
@@ -125,15 +135,37 @@ class Services {
             }
         }
     }
+
     
-    func addIncome(_ income: IncomeModel, completion: @escaping (Error?) -> Void) {
+    func addCategories(_ categories: [CategoryModel], completion: @escaping (Error?) -> Void) {
         guard let userID = Auth.auth().currentUser?.uid else {
             completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
             return
         }
-        let incomeCollection = db.collection("users").document(userID).collection("incomes")
-        incomeCollection.addDocument(data: income.toDictionary(), completion: completion)
+        
+        let categoryCollection = db.collection("users").document(userID).collection("categories")
+        let group = DispatchGroup()
+        var firstError: Error?
+
+        for category in categories {
+            group.enter()
+            categoryCollection.document(category.identifier).setData(category.toDictionary()) { error in
+                if let error = error {
+                    if firstError == nil {
+                        firstError = error
+                    }
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            completion(firstError)
+        }
     }
+
+
+    
 
     // Get Monthly Income
     func getMonthlyIncome(year: Int, month: Int, completion: @escaping (Double, Error?) -> Void) {

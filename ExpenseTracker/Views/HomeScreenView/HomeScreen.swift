@@ -98,7 +98,7 @@ struct HomeScreen: View {
                                     NavigationLink(
                                         destination: CategoryDetailView(category: topCategories[index].category)
                                     ) {
-                                        ExpenseCell(imageName: "car", category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
+                                        ExpenseCell(imageName: "car", category: topCategories[index].category.title, amount: topCategories[index].total.toReadableString())
                                             .padding(.horizontal, 10)
                                             .foregroundColor(.black)
                                     }

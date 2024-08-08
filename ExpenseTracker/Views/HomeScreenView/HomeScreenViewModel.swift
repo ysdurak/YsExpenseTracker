@@ -14,7 +14,7 @@ class HomeScreenViewModel: ObservableObject {
     @Published var weeklyExpenses: [ExpenseModel] = []
     @Published var monthlyExpenses: [ExpenseModel] = []
     @Published var yearlyExpenses: [ExpenseModel] = []
-    @Published var topExpenseCategories: [(category: String, total: Double)]?
+    @Published var topExpenseCategories: [(category: CategoryModel, total: Double)]?
     @Published var isLoading: Bool = true
     
     init() {
@@ -121,9 +121,9 @@ class HomeScreenViewModel: ObservableObject {
         }
     }
     
-    func top3Categories(expenses: [ExpenseModel]) -> [(category: String, total: Double)] {
+    func top3Categories(expenses: [ExpenseModel]) -> [(category: CategoryModel, total: Double)] {
         // kategorilere göre toplam harcama hesaplama
-        var categoryTotals: [String: Double] = [:]
+        var categoryTotals: [CategoryModel: Double] = [:]
         for expense in expenses {
             categoryTotals[expense.category, default: 0] += expense.amount
         }

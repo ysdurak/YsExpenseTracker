@@ -12,5 +12,16 @@ class Defaults {
     static let shared = Defaults()
     private init() {
     }
-    let options = ["Yemek", "Oyun", "Kıyafet", "Market", "Teknoloji", "Fatura", "Eğlence", "Tatil", "Kira", "Abonelikler"]
+    let categories = [
+        CategoryModel(title: "Yemek", identifier: "food"),
+        CategoryModel(title: "Oyun", identifier: "games"),
+        CategoryModel(title: "Kıyafet", identifier: "clothing"),
+        CategoryModel(title: "Market", identifier: "groceries"),
+        CategoryModel(title: "Teknoloji", identifier: "technology"),
+        CategoryModel(title: "Fatura", identifier: "bills"),
+        CategoryModel(title: "Eğlence", identifier: "entertainment"),
+        CategoryModel(title: "Tatil", identifier: "vacation"),
+        CategoryModel(title: "Kira", identifier: "rent"),
+        CategoryModel(title: "Abonelikler", identifier: "subscriptions")
+    ]
 }

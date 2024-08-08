@@ -12,7 +12,6 @@ import PopupView
 struct AddExpenseView: View {
     @Environment(\.dismiss) var dismiss
     
-    @State var category: String = ""
     @State var date: Date = Date()
     @State var note: String = ""
     @State var value: String = ""
@@ -20,7 +19,7 @@ struct AddExpenseView: View {
     @State var showSuccessAlert: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = Defaults.shared.options
+    let options = Defaults.shared.categories
     @State var oneTimeSelected: Bool
 
     var body: some View {
@@ -46,12 +45,12 @@ struct AddExpenseView: View {
                                         Button(action: {
                                             selectedOptionIndex = index
                                         }) {
-                                            Text(options[index])
+                                            Text(options[index].title)
                                         }
                                     }
                                 } label: {
                                     HStack {
-                                        Text(options[selectedOptionIndex])
+                                        Text(options[selectedOptionIndex].title)
                                             .foregroundColor(.black)
                                         Spacer()
                                         Image(systemName: "chevron.down")
@@ -193,7 +192,7 @@ struct AddExpenseView: View {
                             let amount = Double(value) ?? 0.0
                             let expense = ExpenseModel(
                                 date: date,
-                                title: options[selectedOptionIndex],
+                                title: options[selectedOptionIndex].title,
                                 note: note,
                                 amount: amount,
                                 category: options[selectedOptionIndex]
@@ -261,7 +260,6 @@ struct AddExpenseView: View {
     }
     
     func clearParams() {
-        category = ""
         date = Date()
         note = ""
         value = ""

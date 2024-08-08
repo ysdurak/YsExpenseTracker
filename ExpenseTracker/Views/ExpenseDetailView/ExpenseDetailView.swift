@@ -37,7 +37,7 @@ struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
                     .padding(.vertical, 5)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    detailRow(iconName: "tag", title: "Kategori", value: expense.category)
+                    detailRow(iconName: "tag", title: "Kategori", value: expense.category.title)
                     detailRow(iconName: "note.text", title: "Not", value: expense.note ?? "Bu harcama için not yok")
                     detailRow(iconName: "calendar", title: "Tarih", value: expense.date, formatter: DateFormatter.longDateFormatter)
                     detailRow(iconName: "clock", title: "Saat", value: expense.date, formatter: DateFormatter.timeFormatter)

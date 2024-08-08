@@ -10,15 +10,15 @@ import Foundation
 
 
 class CategoryViewModel: ObservableObject {
-    @Published var categoryExpenses: [(category: String, total: Double)]?
+    @Published var categoryExpenses: [(category: CategoryModel, total: Double)]?
     
     init(){
         
     }
     
-    func sumUpExpenseCategories(expenses: [ExpenseModel]) -> [(category: String, total: Double)] {
+    func sumUpExpenseCategories(expenses: [ExpenseModel]) -> [(category: CategoryModel, total: Double)] {
         
-        var categoryTotals: [String: Double] = [:]
+        var categoryTotals: [CategoryModel: Double] = [:]
         for expense in expenses {
             categoryTotals[expense.category, default: 0] += expense.amount
         }
