@@ -80,10 +80,6 @@ struct MainTabView: View {
         func setUpTab()->some View{
             self
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background{
-                    Color("BG")
-                        .ignoresSafeArea()
-                }
         }
     }
 

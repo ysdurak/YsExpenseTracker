@@ -17,6 +17,12 @@ struct RecentExpensesView: View {
         ZStack {
             NavigationView {
                 VStack {
+                    HStack{
+                        Text("Son Harcamalarım")
+                            .customFont(.semiBold, 24)
+                        Spacer()
+                    }
+                    .padding(5)
                     SearchBar(text: $viewModel.searchText)
                         .padding(5)
                     if viewModel.filteredExpenses.isEmpty{
@@ -46,7 +52,6 @@ struct RecentExpensesView: View {
                                 }
                             }
                         }
-                        .navigationTitle("Son Harcamalarım")
                         .navigationBarTitleDisplayMode(.large)
                         .listStyle(PlainListStyle())
                     }

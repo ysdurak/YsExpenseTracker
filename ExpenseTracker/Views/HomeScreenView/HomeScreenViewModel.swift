@@ -16,6 +16,8 @@ class HomeScreenViewModel: ObservableObject {
     @Published var yearlyExpenses: [ExpenseModel] = []
     @Published var topExpenseCategories: [(category: CategoryModel, total: Double)]?
     @Published var isLoading: Bool = true
+    @Published var dailySpent: Double = 0.0
+    @Published var dailyLimit: Double = 0
     
     init() {
         loadData()
@@ -52,6 +54,16 @@ class HomeScreenViewModel: ObservableObject {
         
         dispatchGroup.notify(queue: .main) {
             self.isLoading = false
+        }
+    }
+    
+     func fetchDailyExpenses() {
+        Services.shared.fetchTodayExpenses { totalSpent, error in
+            if let totalSpent = totalSpent {
+                self.dailySpent = totalSpent
+            } else if let error = error {
+                print("Error fetching daily expenses: \(error)")
+            }
         }
     }
     

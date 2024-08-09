@@ -65,7 +65,7 @@ struct HomeScreen: View {
                         VStack {
                             HStack {
                                 Text("Harcama Özetim")
-                                    .customFont(.regular, 24)
+                                    .customFont(.semiBold, 16)
                                 Spacer()
                             }
                             
@@ -91,10 +91,16 @@ struct HomeScreen: View {
                         }
                         .padding(.top, 10)
                         
+                        Text("Günlük limitim")
+                            .customFont(.semiBold, 16)
+                        
+                        DailyLimitProgressView()
+                            .environmentObject(viewModel)
+                        
                         VStack {
                             HStack {
                                 Text("Son Harcamalarım")
-                                    .customFont(.regular, 24)
+                                    .customFont(.semiBold, 16)
                                 Spacer()
                                 NavigationLink(destination: CategoryScreen()) {
                                     Text("Tümü")
@@ -148,4 +154,41 @@ struct HomeScreen: View {
 
 #Preview{
     HomeScreen()
+}
+
+
+
+
+struct DailyLimitProgressView: View {
+    @EnvironmentObject var viewModel: HomeScreenViewModel
+    var body: some View {
+        VStack {
+            Text("Günlük Harcama Limiti")
+                .font(.headline)
+                .padding(.bottom, 10)
+            
+            ZStack {
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(viewModel.dailySpent / viewModel.dailyLimit, 1.0)))
+                    .stroke(AngularGradient(gradient: Gradient(colors: [.green, .yellow, .red]),
+                                            center: .center),
+                            style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .frame(width: 150, height: 150)
+                
+                VStack {
+                    Text("\(Int(viewModel.dailySpent)) / \(Int(viewModel.dailyLimit))")
+                        .font(.title)
+                        .bold()
+                    Text("₺ harcandı")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .padding()
+        .onAppear {
+            viewModel.fetchDailyExpenses()
+        }
+    }
 }

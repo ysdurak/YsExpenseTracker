@@ -234,6 +234,29 @@ class Services {
             }
         }
     }
+    
+    func fetchTodayExpenses(completion: @escaping (Double?, Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        db.collection("expenses")
+            .whereField("userID", isEqualTo: userID)
+            .whereField("date", isGreaterThanOrEqualTo: startOfDay)
+            .whereField("date", isLessThanOrEqualTo: endOfDay)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    completion(nil, error)
+                    return
+                }
+                
+                let totalSpent = querySnapshot?.documents.compactMap { ExpenseModel(document: $0) }
+                    .reduce(0) { $0 + $1.amount } ?? 0
+                
+                completion(totalSpent, nil)
+            }
+    }
 
     // Get Monthly Expense
     func getMonthlyExpense(year: Int, month: Int, completion: @escaping (Double, Error?) -> Void) {
