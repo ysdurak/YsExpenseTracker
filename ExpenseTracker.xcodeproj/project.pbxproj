@@ -80,6 +80,8 @@
 		B696D75B2BD287E100D24046 /* ExpenseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696D75A2BD287E100D24046 /* ExpenseCell.swift */; };
 		B696D75F2BD29CF600D24046 /* RecentExpensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696D75E2BD29CF600D24046 /* RecentExpensesView.swift */; };
 		B696D7612BD2BE0100D24046 /* PeelEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B696D7602BD2BE0100D24046 /* PeelEffect.swift */; };
+		B6B3245F2C6602F50069F905 /* AddExpenseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B3245E2C6602F50069F905 /* AddExpenseViewModel.swift */; };
+		B6B324612C661EDA0069F905 /* AddExpenseAndIncome.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B324602C661EDA0069F905 /* AddExpenseAndIncome.swift */; };
 		B6B487282C64E43C006CC783 /* ExpenseHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B487272C64E43C006CC783 /* ExpenseHandling.swift */; };
 		B6B4872A2C65251C006CC783 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B487292C65251C006CC783 /* CategoryModel.swift */; };
 		B6CDBE0E2C5C15B90067C52C /* RecentExpensesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CDBE0D2C5C15B90067C52C /* RecentExpensesViewModel.swift */; };
@@ -141,6 +143,8 @@
 		B696D75A2BD287E100D24046 /* ExpenseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCell.swift; sourceTree = "<group>"; };
 		B696D75E2BD29CF600D24046 /* RecentExpensesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentExpensesView.swift; sourceTree = "<group>"; };
 		B696D7602BD2BE0100D24046 /* PeelEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeelEffect.swift; sourceTree = "<group>"; };
+		B6B3245E2C6602F50069F905 /* AddExpenseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExpenseViewModel.swift; sourceTree = "<group>"; };
+		B6B324602C661EDA0069F905 /* AddExpenseAndIncome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExpenseAndIncome.swift; sourceTree = "<group>"; };
 		B6B487272C64E43C006CC783 /* ExpenseHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseHandling.swift; sourceTree = "<group>"; };
 		B6B487292C65251C006CC783 /* CategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModel.swift; sourceTree = "<group>"; };
 		B6CDBE0D2C5C15B90067C52C /* RecentExpensesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentExpensesViewModel.swift; sourceTree = "<group>"; };
@@ -229,6 +233,7 @@
 		B63DF1A62BB17C5A00F4B592 /* ExpenseTracker */ = {
 			isa = PBXGroup;
 			children = (
+				B6E072F72C4D34E60080AE8F /* Services.swift */,
 				B64C18D72C5D5A4200D15483 /* Model */,
 				B64C18D62C5D59CB00D15483 /* AppDelegate */,
 				B64C18CF2C5D590B00D15483 /* Helpers */,
@@ -236,17 +241,12 @@
 				B64C18C92C5D587800D15483 /* Extensions */,
 				B600A04C2BB2DBC100AAB3E6 /* Font */,
 				B63DF1AF2BB17C5B00F4B592 /* Preview Content */,
-				B696D7602BD2BE0100D24046 /* PeelEffect.swift */,
-				B600A0762BB2E10A00AAB3E6 /* BaseComponents.swift */,
-				B600A0742BB2DDD800AAB3E6 /* FontBook.swift */,
 				B63DF1A92BB17C5A00F4B592 /* OnboardingScreen.swift */,
 				B63DF1AD2BB17C5B00F4B592 /* Assets.xcassets */,
 				B63DF1B72BB1827C00F4B592 /* pngwing.com.png */,
-				B696D75A2BD287E100D24046 /* ExpenseCell.swift */,
 				B6785EA82C4BE8630045512E /* GoogleService-Info.plist */,
 				B600A0732BB2DC5A00AAB3E6 /* Info.plist */,
 				B696D7572BD286C800D24046 /* ExpenseData.xcdatamodeld */,
-				B6E072F72C4D34E60080AE8F /* Services.swift */,
 				B6F4C72E2C60CB9300A54A06 /* TestView.swift */,
 			);
 			path = ExpenseTracker;
@@ -272,6 +272,9 @@
 		B64C18CA2C5D588600D15483 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B6B324602C661EDA0069F905 /* AddExpenseAndIncome.swift */,
+				B696D75A2BD287E100D24046 /* ExpenseCell.swift */,
+				B64C18CB2C5D58A000D15483 /* HomeScreenView */,
 				B655EC8E2C63729F0038A1EF /* EditExpenseView */,
 				B655EC8D2C6369610038A1EF /* RecentExpensesView */,
 				B655EC842C6368EF0038A1EF /* ExpenseDetailView */,
@@ -285,7 +288,6 @@
 				B64C18D42C5D597700D15483 /* TabView */,
 				B64C18D02C5D591B00D15483 /* LoginView */,
 				B64C18CC2C5D58B500D15483 /* SettingsView */,
-				B64C18CB2C5D58A000D15483 /* HomeScreenView */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -311,6 +313,9 @@
 		B64C18CF2C5D590B00D15483 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				B600A0762BB2E10A00AAB3E6 /* BaseComponents.swift */,
+				B600A0742BB2DDD800AAB3E6 /* FontBook.swift */,
+				B696D7602BD2BE0100D24046 /* PeelEffect.swift */,
 				B6785EAC2C4BEF9A0045512E /* AuthenticationManager.swift */,
 				B678E59C2BE13B24002EED51 /* SampleAnalyticsManager.swift */,
 			);
@@ -339,6 +344,7 @@
 			isa = PBXGroup;
 			children = (
 				B600A04A2BB2D38000AAB3E6 /* AddExpenseView.swift */,
+				B6B3245E2C6602F50069F905 /* AddExpenseViewModel.swift */,
 			);
 			path = AddExpenseView;
 			sourceTree = "<group>";
@@ -578,6 +584,7 @@
 				B64C18D92C5D5D7C00D15483 /* RegisterScreen.swift in Sources */,
 				B6CDBE102C5C162D0067C52C /* ExpenseModel.swift in Sources */,
 				B655EC7D2C623BBF0038A1EF /* CategoryViewModel.swift in Sources */,
+				B6B3245F2C6602F50069F905 /* AddExpenseViewModel.swift in Sources */,
 				B696D7592BD286C800D24046 /* ExpenseData.xcdatamodeld in Sources */,
 				B63DF1A82BB17C5A00F4B592 /* ExpenseTrackerApp.swift in Sources */,
 				B600A04B2BB2D38000AAB3E6 /* AddExpenseView.swift in Sources */,
@@ -592,6 +599,7 @@
 				B696D75F2BD29CF600D24046 /* RecentExpensesView.swift in Sources */,
 				B6B487282C64E43C006CC783 /* ExpenseHandling.swift in Sources */,
 				B655EC862C6369010038A1EF /* ExpenseDetailView.swift in Sources */,
+				B6B324612C661EDA0069F905 /* AddExpenseAndIncome.swift in Sources */,
 				B64C18D22C5D592B00D15483 /* LoginScreenViewModel.swift in Sources */,
 				B6CDBE0E2C5C15B90067C52C /* RecentExpensesViewModel.swift in Sources */,
 				B696D7612BD2BE0100D24046 /* PeelEffect.swift in Sources */,

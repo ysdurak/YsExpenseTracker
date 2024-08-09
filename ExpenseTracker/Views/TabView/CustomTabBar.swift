@@ -88,8 +88,7 @@ struct CustomTabBar: View {
 enum Tab: String,CaseIterable{
     case home = "house"
     case cart = "menucard"
-    case addExpense = "plus.circle"
-    case addIncome = "minus.circle"
+    case addSomething = "plus.circle"
     case profile = "person.circle"
 }
 

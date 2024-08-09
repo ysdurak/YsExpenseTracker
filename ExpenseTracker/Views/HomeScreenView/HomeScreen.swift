@@ -111,9 +111,7 @@ struct HomeScreen: View {
                                     .padding(.bottom, 10)
                                 
                                 Button(action: {
-                                    // Tab bar'da 3. sekmeye gitme işlemini gerçekleştir
-                                    // Örneğin, bu 3. sekmeyi seçmek için bir Binding kullanabilirsin
-                                    appModel.currentTab = .addExpense
+                                    appModel.currentTab = .addSomething
                                 }) {
                                     Text("Harcama Ekle")
                                         .customFont(.bold, 18)

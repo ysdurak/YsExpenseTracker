@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct CategoryModel: Equatable, Hashable {
+struct CategoryModel: Equatable, Hashable, Decodable {
     var title: String
     var identifier: String
     

@@ -131,6 +131,6 @@ func getImage(categoryName: String) -> String! {
     case "Oyun":
         return "gamecontroller"
     default:
-        return "fork.knife.circle"
+        return "dollarsign.circle"
     }
 }

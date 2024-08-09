@@ -12,6 +12,9 @@ class Defaults {
     static let shared = Defaults()
     private init() {
     }
+    
+    var userCategories: [CategoryModel] = []
+    
     let categories = [
         CategoryModel(title: "Yemek", identifier: "food"),
         CategoryModel(title: "Oyun", identifier: "games"),

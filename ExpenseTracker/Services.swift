@@ -136,6 +136,36 @@ class Services {
         }
     }
 
+    func getUserCategories(completion: @escaping ([CategoryModel]?, Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        
+        let categoryCollection = db.collection("users").document(userID).collection("categories")
+        
+        categoryCollection.getDocuments { querySnapshot, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            
+            guard let documents = querySnapshot?.documents else {
+                completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No categories found"]))
+                return
+            }
+            
+            let categories: [CategoryModel] = documents.compactMap { document in
+                CategoryModel(data: document.data())
+            }
+            
+            completion(categories, nil)
+        }
+    }
+
+
+    
+    
     
     func addCategories(_ categories: [CategoryModel], completion: @escaping (Error?) -> Void) {
         guard let userID = Auth.auth().currentUser?.uid else {

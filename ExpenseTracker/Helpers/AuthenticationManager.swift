@@ -77,6 +77,7 @@ class AuthViewModel: ObservableObject {
     
 
     func checkAuthentication() {
+        isLoading = true
         AuthenticationManager.shared.getAuthenticatedUser { [weak self] result in
             switch result {
             case .success(let user):
@@ -89,7 +90,15 @@ class AuthViewModel: ObservableObject {
     }
     
     func getCategories(){
-        
+        Services.shared.getUserCategories { categories, error in
+            if let categories = categories {
+                Defaults.shared.userCategories = categories
+                self.isLoading = false
+            }
+            else {
+                return
+            }
+        }
     }
     
     

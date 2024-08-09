@@ -24,36 +24,38 @@ struct MainTabView: View {
     }
     var body: some View {
         ZStack{
-            
-            TabView(selection: $appModel.currentTab) {
-                
-                HomeScreen()
-                    .environmentObject(appModel)
-                    .tag(Tab.home)
-                    .setUpTab()
-                
-                RecentExpensesView()
-                    .tag(Tab.cart)
-                    .setUpTab()
-                
-                AddIncomeScreen(oneTimeSelected: true)
-                    .tag(Tab.addIncome)
-                    .setUpTab()
-                    .environmentObject(authViewModel)
-                
-                AddExpenseView(oneTimeSelected: true)
-                    .tag(Tab.addExpense)
-                    .setUpTab()
-                    .environment(\.managedObjectContext, managedObjContext)
-                
-                ProfileScreen()
-                    .environmentObject(authViewModel)
-                    .tag(Tab.profile)
-                    .setUpTab()
+            if authViewModel.isLoading {
+                VStack{
+                    ProgressView("Yükleniyor...")
+                }
             }
-            
-            CustomTabBar(currentTab: $appModel.currentTab, animation: animation)
-                .offset(y: UIScreen.main.bounds.height / 2 - 50)
+            else {
+                TabView(selection: $appModel.currentTab) {
+                    
+                    HomeScreen()
+                        .environmentObject(appModel)
+                        .tag(Tab.home)
+                        .setUpTab()
+                    
+                    RecentExpensesView()
+                        .tag(Tab.cart)
+                        .setUpTab()
+                    
+                    AddExpenseAndIncome()
+                        .tag(Tab.addSomething)
+                        .setUpTab()
+                        .environmentObject(authViewModel)
+
+                    ProfileScreen()
+                        .environmentObject(authViewModel)
+                        .tag(Tab.profile)
+                        .setUpTab()
+                }
+                
+                CustomTabBar(currentTab: $appModel.currentTab, animation: animation)
+                    .offset(y: UIScreen.main.bounds.height / 2 - 50)
+            }
+
         }
         .onAppear {
             authViewModel.checkAuthentication()

@@ -17,11 +17,12 @@ struct AddExpenseView: View {
     @State var value: String = ""
     @State var showAlert: Bool = false
     @State var showSuccessAlert: Bool = false
+    @State var showAddCategory: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = Defaults.shared.categories
+    let options = Defaults.shared.userCategories
     @State var oneTimeSelected: Bool
-
+    
     var body: some View {
         ZStack(alignment: .leading) {
             ScrollView {
@@ -31,12 +32,21 @@ struct AddExpenseView: View {
                             .font(.headline)
                             .frame(alignment: .leading)
                             .padding(.leading, 25)
+                        HStack{
+                            Text("Kategori")
+                                .font(.subheadline)
+                                .frame(alignment: .leading)
+                                .padding(.leading, 25)
+                            
+                            Button {
+                                showAddCategory = true
+                            } label: {
+                                Image(systemName: "cross.circle.fill")
+                            }
+                            
+                        }
+                        .padding(.top, 10)
                         
-                        Text("Kategori")
-                            .font(.subheadline)
-                            .frame(alignment: .leading)
-                            .padding(.leading, 25)
-                            .padding(.top, 10)
                         
                         HStack {
                             VStack {
@@ -228,6 +238,9 @@ struct AddExpenseView: View {
                 }
             }
         }
+        .sheet(isPresented: $showAddCategory) {
+            AddCategoryView()
+        }
         .popup(isPresented: $showAlert) {
             Text("Lütfen bir harcama miktarı giriniz")
                 .frame(width: 200, height: 60)
@@ -251,7 +264,7 @@ struct AddExpenseView: View {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                     }
-                    .padding()
+                        .padding()
                 )
                 .padding()
         } customize: {
@@ -270,3 +283,48 @@ struct AddExpenseView: View {
 #Preview {
     AddExpenseView(oneTimeSelected: true)
 }
+
+
+struct AddCategoryView: View {
+    @State var categoryName: String = ""
+    @Environment(\.presentationMode) var presentationMode
+    var body: some View {
+        ZStack {
+            VStack{
+                TextField("Yeni kategori giriniz", text: $categoryName)
+                    .padding()
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 1)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                    .keyboardType(.decimalPad)
+                
+                Button(action: {
+                    Services.shared.addCategories([CategoryModel(title: categoryName, identifier: categoryName)]) { error in
+                        if let error = error {
+                            print(error)
+                        }
+                        else {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Kategoryi ekle")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+                    .frame(height: 90)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.black, lineWidth: 1)
+                    }
+                })
+            }
+        }
+    }
+}
+
