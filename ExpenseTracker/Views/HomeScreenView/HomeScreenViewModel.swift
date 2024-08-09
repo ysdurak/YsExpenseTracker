@@ -66,6 +66,38 @@ class HomeScreenViewModel: ObservableObject {
         }
     }
     
+    func generateDaysInCurrentMonth() -> [Date] {
+        let calendar = Calendar.current
+        let today = Date()
+        
+        guard let range = calendar.range(of: .day, in: .month, for: today) else {
+            return []
+        }
+        
+        let days = range.compactMap { day -> Date? in
+            var components = calendar.dateComponents([.year, .month], from: today)
+            components.day = day
+            return calendar.date(from: components)
+        }
+        
+        return days
+    }
+    
+    // Helper function to match expenses to days
+    func generateExpenseData(for days: [Date], from expenses: [ExpenseModel]) -> [(date: Date, amount: Double)] {
+        var data: [(date: Date, amount: Double)] = []
+        
+        for day in days {
+            let total = expenses
+                .filter { Calendar.current.isDate($0.date, inSameDayAs: day) }
+                .reduce(0) { $0 + $1.amount }
+            data.append((date: day, amount: total))
+        }
+        
+        return data
+    }
+
+    
     func fetchMonthlyExpenses(completion: @escaping () -> Void) {
         Services.shared.getMonthlyExpenses { [weak self] expenses, error in
             DispatchQueue.main.async {

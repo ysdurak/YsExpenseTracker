@@ -83,7 +83,7 @@ struct PieChartView: View {
             )
             .foregroundStyle(by: .value("Category", item.category.title))
             .annotation(position: .overlay, alignment: .center) {
-                Text(String(format: "%.1f%%", percentage))
+                Text(String(format: "%.0f%%", percentage))
                     .customFont(.regular, 16)
                     .foregroundColor(.white)
             }

@@ -19,31 +19,39 @@ struct RecentExpensesView: View {
                 VStack {
                     SearchBar(text: $viewModel.searchText)
                         .padding(5)
-                    
-                    List {
-                        ForEach(viewModel.filteredExpenses, id: \.id) { expense in
-                            NavigationLink(destination: ExpenseDetailView(expense: expense, viewModel: viewModel, source: .recentExpenses)
-                                ) {
-                                RecentExpensesCell(
-                                    date: expense.date,
-                                    category: expense.category,
-                                    note: expense.note,
-                                    value: expense.amount
-                                )
-                            }
-                            .swipeActions(allowsFullSwipe: true) {
-                                Button {
-                                    viewModel.deleteExpense(id: expense.id ?? "")
-                                } label: {
-                                    Image(systemName: "trash")
-                                        .foregroundColor(.red)
+                    if viewModel.filteredExpenses.isEmpty{
+                        Text("Harcama bulunamadı")
+                            .customFont(.extraLight, 16)
+                            .padding(.top, 20)
+                    }
+                    else {
+                        List {
+                            ForEach(viewModel.filteredExpenses, id: \.id) { expense in
+                                NavigationLink(destination: ExpenseDetailView(expense: expense, viewModel: viewModel, source: .recentExpenses)
+                                    ) {
+                                    RecentExpensesCell(
+                                        date: expense.date,
+                                        category: expense.category,
+                                        note: expense.note,
+                                        value: expense.amount
+                                    )
+                                }
+                                .swipeActions(allowsFullSwipe: true) {
+                                    Button {
+                                        viewModel.deleteExpense(id: expense.id ?? "")
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .foregroundColor(.red)
+                                    }
                                 }
                             }
                         }
+                        .navigationTitle("Son Harcamalarım")
+                        .navigationBarTitleDisplayMode(.large)
+                        .listStyle(PlainListStyle())
                     }
-                    .navigationTitle("Son Harcamalarım")
-                    .navigationBarTitleDisplayMode(.large)
-                    .listStyle(PlainListStyle())
+                    Spacer()
+
                 }
             }
         }

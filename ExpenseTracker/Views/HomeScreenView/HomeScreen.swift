@@ -16,6 +16,8 @@ struct HomeScreen: View {
     @Environment(\.colorScheme) private var scheme
     
     var body: some View {
+        let daysInMonth = viewModel.generateDaysInCurrentMonth()
+        let expenseData = viewModel.generateExpenseData(for: daysInMonth, from: viewModel.monthlyExpenses)
         NavigationStack {
             if viewModel.isLoading {
                 ProgressView("Yükleniyor...")
@@ -42,14 +44,16 @@ struct HomeScreen: View {
                             
                             //Bar chart ll come here
                             Chart {
-                                ForEach(viewModel.monthlyExpenses) { data in
+                                ForEach(expenseData, id: \.date) { data in
                                     BarMark(
-                                        x: .value("Gün", data.date, unit: .day),
-                                        y: .value("Miktar", data.amount)
+                                        x: .value("Day", data.date, unit: .day),
+                                        y: .value("Amount", data.amount)
                                     )
-                                    .foregroundStyle(Color.green)
-                                    
+                                    .foregroundStyle(data.amount > 0 ? Color.green : Color.clear) // Show bars only if there's an expense
                                 }
+                            }
+                            .chartXAxis {
+                                AxisMarks(values: .stride(by: .day)) // Show x-axis labels for each day
                             }
                         }
                         .padding()
@@ -67,18 +71,21 @@ struct HomeScreen: View {
                             
                             HStack {
                                 ExpenseSummary(
-                                    imageName: "arrowtriangle.up.circle",
-                                    title: "Aylık Gelirlerim",
+                                    imageName: "arrow.up.square",
+                                    imageColor: Color.green,
+                                    title: "Gelirlerim",
                                     valueText: viewModel.monthlyIncomeValue.toReadableString() + " ₺",
-                                    bgColor: .green.opacity(0.3)
+                                    bgColor: .clear
+                                    
                                 )
                                 Spacer()
                                     .frame(width: 10)
                                 ExpenseSummary(
-                                    imageName: "arrowtriangle.down.circle",
-                                    title: "Aylık Giderlerim",
+                                    imageName: "arrow.down.square",
+                                    imageColor: Color.red,
+                                    title: "Giderlerim",
                                     valueText: viewModel.monthlyExpenseValue.toReadableString() + " ₺",
-                                    bgColor: .red.opacity(0.3)
+                                    bgColor: .clear
                                 )
                             }
                         }
@@ -92,6 +99,7 @@ struct HomeScreen: View {
                                 NavigationLink(destination: CategoryScreen()) {
                                     Text("Tümü")
                                         .customFont(.semiBold, 15)
+                                        .foregroundStyle(Color.black)
                                         .underline()
                                 }
                             }
@@ -109,13 +117,13 @@ struct HomeScreen: View {
                                 
                             } else {
                                 Text("Harcama bulunamadı")
-                                    .customFont(.light, 16)
-                                    .padding(.bottom, 10)
+                                    .customFont(.extraLight, 16)
+                                    .padding(.top, 20)
                                 
                                 Button(action: {
                                     appModel.currentTab = .addSomething
                                 }) {
-                                    Image("plus.circle")
+                                    Image(systemName: "plus.circle")
                                         .resizable()
                                         .frame(width: 32, height: 32)
                                         .foregroundStyle(Color.green)
@@ -124,8 +132,7 @@ struct HomeScreen: View {
                         }
                         .padding(.top, 10)
                         
-                        Color(.white)
-                            .frame(height: 100)
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                     .padding()

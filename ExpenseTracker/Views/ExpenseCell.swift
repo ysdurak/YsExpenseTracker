@@ -35,18 +35,21 @@ struct ExpenseCell: View {
 
 struct ExpenseSummary: View {
     var imageName: String
+    var imageColor: Color
     var title: String
     var valueText: String
     var bgColor: Color
     var body: some View {
         ZStack{
             HStack{
-                Image(systemName: imageName)
+                Image(systemName: imageName)    
+                    .frame(width: 36,height: 36)
+                    .foregroundStyle(imageColor)
                 Spacer()
                     .frame(width: 20)
                 VStack{
                     Text(title)
-                        .customFont(.medium)
+                        .customFont(.light)
                     Text(valueText)
                         .customFont(.medium)
                     

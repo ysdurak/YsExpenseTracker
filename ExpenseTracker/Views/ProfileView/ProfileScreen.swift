@@ -18,18 +18,17 @@ struct ProfileScreen: View {
                     // User Avatar
                     Image(systemName: "person.circle.fill")
                         .resizable()
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(.orange)
+                        .frame(width: 90, height: 90)
+                        .foregroundColor(.green)
                         .padding(.top, 20)
                     
                     // User Name
-                    Text("Ceren")
-                        .font(.title)
-                        .fontWeight(.bold)
+                    Text("Yavuz Selim")
+                        .customFont(.semiBold, 24)
                     
                     // User Email
                     Text(viewModel.email)
-                        .font(.subheadline)
+                        .customFont(.light, 12)
                         .foregroundColor(.gray)
                     
                     // Profile Options
@@ -64,7 +63,7 @@ struct ProfileOptionRow: View {
     var body: some View {
         HStack {
             Image(systemName: iconName)
-                .foregroundColor(.orange)
+                .foregroundColor(.green)
                 .frame(width: 24, height: 24)
             Text(title)
                 .foregroundColor(.black)

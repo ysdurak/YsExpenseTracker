@@ -62,7 +62,7 @@ struct CustomTabBar: View {
                         ZStack{
                             if currentTab == tab{
                                 Circle()
-                                    .fill(Color.orange)
+                                    .fill(Color.green)
                                     .shadow(color: Color.black.opacity(0.1), radius: 8, x: 5, y: 5)
                                     .matchedGeometryEffect(id: "TAB", in: animation)
                             }
