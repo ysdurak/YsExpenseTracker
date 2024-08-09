@@ -14,8 +14,15 @@ struct AddExpenseAndIncome: View {
     var body: some View {
         VStack(spacing: 16) {
             Picker(selection: $selectedView, label: Text("")) {
-                Text("Gider").tag(ViewType.expense)
-                Text("Gelir").tag(ViewType.income)
+                Text("Gider")
+                    .customFont(.medium, 13)
+                    .foregroundColor(.orange)
+                    .tag(ViewType.expense)
+                
+                Text("Gelir")
+                    .customFont(.medium, 13)
+                    .foregroundColor(.green)
+                    .tag(ViewType.income)
             }
             .pickerStyle(SegmentedPickerStyle()) 
             .padding(.horizontal)
@@ -25,9 +32,9 @@ struct AddExpenseAndIncome: View {
                 .padding(.horizontal)
             
             if selectedView == .expense {
-                AddExpenseView(oneTimeSelected: true)
+                AddExpenseView()
             } else {
-                AddIncomeScreen(oneTimeSelected: true)
+                AddIncomeScreen()
             }
             
             Spacer()
@@ -39,4 +46,8 @@ struct AddExpenseAndIncome: View {
 enum ViewType {
     case expense
     case income
+}
+
+#Preview {
+    AddExpenseAndIncome()
 }

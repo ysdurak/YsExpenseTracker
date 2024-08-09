@@ -66,7 +66,7 @@ struct ExpenseSummary: View {
 struct RecentExpensesCell: View {
     
     var date: Date 
-    var category: String
+    var category: CategoryModel
     var note: String
     var value: Double
     
@@ -90,8 +90,8 @@ struct RecentExpensesCell: View {
                 
                 VStack{
                     HStack{
-                        Image(systemName: getImage(categoryName: category))
-                        Text(category)
+                        Image(systemName: getImage(categoryName: category.identifier))
+                        Text(category.title)
                             .customFont(.regular, 16)
                         Spacer()
                     }
@@ -122,13 +122,13 @@ struct RecentExpensesCell: View {
 
 func getImage(categoryName: String) -> String! {
     switch categoryName {
-    case "Teknoloji":
+    case "technology":
         return "laptopcomputer"
-    case "Yemek":
+    case "food":
         return "fork.knife.circle"
-    case "Market":
+    case "market":
         return "cart.fill"
-    case "Oyun":
+    case "game":
         return "gamecontroller"
     default:
         return "dollarsign.circle"

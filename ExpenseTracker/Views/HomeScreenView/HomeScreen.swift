@@ -47,6 +47,8 @@ struct HomeScreen: View {
                                         x: .value("Gün", data.date, unit: .day),
                                         y: .value("Miktar", data.amount)
                                     )
+                                    .foregroundStyle(Color.green)
+                                    
                                 }
                             }
                         }
@@ -113,12 +115,10 @@ struct HomeScreen: View {
                                 Button(action: {
                                     appModel.currentTab = .addSomething
                                 }) {
-                                    Text("Harcama Ekle")
-                                        .customFont(.bold, 18)
-                                        .foregroundColor(.white)
-                                        .padding()
-                                        .background(Color.blue)
-                                        .cornerRadius(10)
+                                    Image("plus.circle")
+                                        .resizable()
+                                        .frame(width: 32, height: 32)
+                                        .foregroundStyle(Color.green)
                                 }
                             }
                         }
@@ -136,4 +136,9 @@ struct HomeScreen: View {
             viewModel.loadData()
         }
     }
+}
+
+
+#Preview{
+    HomeScreen()
 }

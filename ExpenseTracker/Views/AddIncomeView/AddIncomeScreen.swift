@@ -21,131 +21,63 @@ struct AddIncomeScreen: View {
     @State var selectedOptionIndex = 0
     
     let options = ["Yemek", "Oyun", "Kıyafet", "Market"]
-    @State var oneTimeSelected: Bool
-
+    
     // ExpenseService instance
     
     var body: some View {
         ZStack(alignment: .leading) {
             ScrollView {
                 VStack {
-                    VStack(alignment: .leading, spacing: 5) {
+                    VStack(alignment: .leading, spacing: 15) {
                         
                         Text("Gelir Detayları")
-                            .font(.headline)
+                            .customFont(.semiBold, 16)
                             .frame(alignment: .leading)
                             .padding(.leading, 25)
                         
                         Text("Gelen Para")
-                            .font(.subheadline)
+                            .customFont(.regular, 14)
                             .frame(alignment: .leading)
                             .padding(.leading, 25)
                         
-                        HStack {
-                            VStack {
-                                TextField("Kazandığınız para miktarı", text: $value)
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 1)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    )
-                                    .keyboardType(.decimalPad)
-                            }
-                            .padding(.trailing, 20)
-                            .frame(height: 90)
-                            .padding(.leading, 25)
-                            Spacer()
-                        }
+                        
+                            TextField("Kazandığınız para miktarı", text: $value)
+                                .padding()
+                                .background(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 1)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                                .keyboardType(.decimalPad)
+                        
+                        .padding(.horizontal, 25)
+                        .frame(height: 50)
+                        
+                        
+                        
                         
                         Text("Gelir Tarihi")
                             .customFont(.semiBold, 16)
-                            .font(.subheadline)
-                            .frame(alignment: .leading)
                             .padding(.leading, 25)
                         
-                        HStack {
-                            DatePicker(selection: $date, displayedComponents: .date) {
-                                Text("Tarih seçin")
-                            }
+                        
+                        DatePicker(selection: $date, displayedComponents: .date) {
+                            Text("Tarih seçin")
+                                .customFont(.regular, 14)
                         }
                         .padding(.horizontal, 25)
                         
-                        HStack {
-                            Text("Gelir Tipi")
-                                .font(.headline)
-                                .frame(alignment: .leading)
-                                .padding(.leading, 25)
-                            
-                            Text(oneTimeSelected ? "Tek seferlik" : "Aylık")
-                                .opacity(0.5)
-                        }
-                        .padding(.bottom, 25)
-                        
-                        HStack {
-                            Spacer()
-                            VStack {
-                                Image("cashRegister")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                                Text("Tek seferlik")
-                                    .font(.subheadline)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                            }
-                            .frame(width: 150, height: 150)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
+                        TextField("Bu gelir kalemi için notunuz", text: $note)
+                            .padding()
+                            .background(Color.white)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 1)
                                     .stroke(Color.black, lineWidth: 1)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                            }
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    oneTimeSelected = true
-                                }
-                            }
-                            Spacer()
-                            VStack {
-                                Image("creditCard")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                                Text("Aylık")
-                                    .font(.subheadline)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                            }
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    oneTimeSelected = false
-                                }
-                            }
-                            .frame(width: 150, height: 150)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                            }
-                            Spacer()
-                        }
-                        
-                        Spacer()
-                        
-                        HStack {
-                            VStack {
-                                TextField("Bu gelir kalemi için notunuz", text: $note)
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 1)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    )
-                            }
-                            .padding(.leading, 25)
-                            .padding(.trailing, 20)
+                            )
+                            .padding(.top, 5)
+                            .padding(.horizontal, 25)
                             .frame(height: 50)
-                            Spacer()
-                        }
-                        Spacer()
+                        
                         
                         Button(action: {
                             if value.isEmpty || value == "0" {
@@ -169,19 +101,16 @@ struct AddIncomeScreen: View {
                                 }
                             }
                         }, label: {
-                            HStack {
-                                Spacer()
-                                Text("Gelir Girişini Bitir")
-                                    .font(.subheadline)
-                                    .foregroundColor(.black)
-                                Spacer()
-                            }
-                            .frame(height: 90)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            }
+                            Text("Gelir girişini bitir")
+                                .customFont(.semiBold,16)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.green)
+                                .cornerRadius(10)
+                                .shadow(radius: 5)
                         })
+                        .padding(.top, 10)
                         .padding(.horizontal, 25)
                     }
                     .background(Color.white)
@@ -213,7 +142,7 @@ struct AddIncomeScreen: View {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                     }
-                    .padding()
+                        .padding()
                 )
                 .padding()
         } customize: {
@@ -231,5 +160,5 @@ struct AddIncomeScreen: View {
 }
 
 #Preview {
-    AddIncomeScreen(oneTimeSelected: true)
+    AddIncomeScreen()
 }

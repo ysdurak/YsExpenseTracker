@@ -120,14 +120,15 @@ struct RegisterScreen: View {
                     }
                 }, label: {
                     Text("Kayıt Ol")
-                        .font(.headline)
+                        .customFont(.semiBold,16)
                         .foregroundColor(.white)
-                        .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .padding()
+                        .background(Color.green)
                         .cornerRadius(10)
-                        .padding(.horizontal, 30)
+                        .shadow(radius: 5)
                 })
+                .padding(.horizontal, 20)
                 
                 
                 Spacer()

@@ -26,7 +26,7 @@ struct RecentExpensesView: View {
                                 ) {
                                 RecentExpensesCell(
                                     date: expense.date,
-                                    category: expense.category.title,
+                                    category: expense.category,
                                     note: expense.note,
                                     value: expense.amount
                                 )

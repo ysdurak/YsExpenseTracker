@@ -19,25 +19,26 @@ struct LoginScreen: View {
             ZStack{
                 VStack(spacing: 10){
                     Spacer()
-                    Image("money")
+                    Image("coinmoney")
                         .resizable()
-                        .frame(width: 200, height: 180)
+                        .frame(width: 150, height: 150)
                     Text("Paranızı yönetmenin en kolay yolu")
-                        .font(.headline)
+                        .customFont(.semiBold, 16)
                     Text("Track Me ile hemen başla !")
+                        .customFont(.regular, 16)
                     VStack{
                         TextField("E-mail", text: $viewModel.email)
                             .padding()
                             .background(Color.white)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 1)
+                                RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
                         SecureField("Şifre", text: $viewModel.password)
                             .padding()
                             .background(Color.white)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 1)
+                                RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
                         
@@ -49,13 +50,14 @@ struct LoginScreen: View {
                                 authViewModel.isAuthenticated = true
                             }
                         }, label: {
-                            Text("Giriş Yap")
-                                .foregroundColor(.black)
+                            Text("Giriş yap")
+                                .customFont(.semiBold,16)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
                                 .padding()
-                                .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color.black, lineWidth: 1)
-                                )
+                                .background(Color.green)
+                                .cornerRadius(10)
+                                .shadow(radius: 5)
                         })
                         
                         Spacer()

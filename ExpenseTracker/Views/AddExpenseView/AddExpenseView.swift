@@ -11,7 +11,7 @@ import PopupView
 
 struct AddExpenseView: View {
     @Environment(\.dismiss) var dismiss
-    
+    @StateObject var viewModel = AddExpenseViewModel()
     @State var date: Date = Date()
     @State var note: String = ""
     @State var value: String = ""
@@ -20,47 +20,59 @@ struct AddExpenseView: View {
     @State var showAddCategory: Bool = false
     @State var selectedOptionIndex = 0
     
-    let options = Defaults.shared.userCategories
-    @State var oneTimeSelected: Bool
     
     var body: some View {
         ZStack(alignment: .leading) {
             ScrollView {
-                VStack {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Harcama Detayları")
-                            .font(.headline)
-                            .frame(alignment: .leading)
-                            .padding(.leading, 25)
-                        HStack{
-                            Text("Kategori")
-                                .font(.subheadline)
+                if viewModel.isLoading {
+                    VStack{
+                        ProgressView("Yükleniyor...")
+                    }
+                }
+                else {
+                    VStack {
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Harcama Detayları")
+                                .font(.headline)
                                 .frame(alignment: .leading)
                                 .padding(.leading, 25)
                             
-                            Button {
-                                showAddCategory = true
-                            } label: {
-                                Image(systemName: "cross.circle.fill")
-                            }
+                            RecentExpensesCell(date: date,
+                                               category: viewModel.userCategories[selectedOptionIndex],
+                                               note: note,
+                                               value: Double(value) ?? 0)
+                            .padding(.horizontal, 20)
                             
-                        }
-                        .padding(.top, 10)
-                        
-                        
-                        HStack {
-                            VStack {
+                            
+                            HStack{
+                                Text("Kategori")
+                                    .customFont(.regular, 15)
+                                    .frame(alignment: .leading)
+                                    .padding(.leading, 25)
+                                
+                                Button {
+                                    showAddCategory = true
+                                } label: {
+                                    Image(systemName: "cross.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                                
+                            }
+                            .padding(.top, 10)
+                            
+                            
+                            HStack {
                                 Menu {
-                                    ForEach(0..<options.count) { index in
+                                    ForEach(0..<viewModel.userCategories.count) { index in
                                         Button(action: {
                                             selectedOptionIndex = index
                                         }) {
-                                            Text(options[index].title)
+                                            Text(viewModel.userCategories[index].title)
                                         }
                                     }
                                 } label: {
                                     HStack {
-                                        Text(options[selectedOptionIndex].title)
+                                        Text(viewModel.userCategories[selectedOptionIndex].title)
                                             .foregroundColor(.black)
                                         Spacer()
                                         Image(systemName: "chevron.down")
@@ -73,173 +85,99 @@ struct AddExpenseView: View {
                                             .stroke(Color.black, lineWidth: 1)
                                     }
                                 }
+                                
+                                .padding(.horizontal, 25)
+                                .frame(height: 55)
                             }
-                            .padding(.horizontal, 20)
-                            .frame(height: 90)
-                        }
-                        
-                        Text("Harcanan Para")
-                            .font(.subheadline)
-                            .frame(alignment: .leading)
-                            .padding(.leading, 25)
-                        
-                        HStack {
-                            VStack {
-                                TextField("Harcadığınız para miktarı", text: $value)
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 1)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    )
-                                    .keyboardType(.decimalPad)
-                                    .onChange(of: value) { newValue in
-                                        // Eğer text boşsa, varsayılan olarak "" göster
-                                        if newValue.isEmpty {
-                                            value = ""
-                                        }
-                                    }
-                            }
-                            .padding(.trailing, 20)
-                            .frame(height: 90)
-                            .padding(.leading, 25)
-                            Spacer()
-                        }
-                        
-                        Text("Ödeme Tarihi")
-                            .font(.subheadline)
-                            .frame(alignment: .leading)
-                            .padding(.leading, 25)
-                        
-                        HStack {
-                            DatePicker(selection: $date, displayedComponents: .date) {
-                                Text("Ödeme tarihini seçin")
-                            }
-                        }
-                        .padding(.horizontal, 25)
-                        
-                        HStack {
-                            Text("Harcama Tipi")
-                                .font(.headline)
+                            
+                            Text("Harcanan Para")
+                                .customFont(.regular, 15)
                                 .frame(alignment: .leading)
                                 .padding(.leading, 25)
                             
-                            Text(oneTimeSelected ? "Tek seferlik" : "Aylık")
-                                .opacity(0.5)
-                        }
-                        .padding(.bottom, 25)
-                        
-                        HStack {
-                            Spacer()
-                            VStack {
-                                Image("cashRegister")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                                Text("Tek seferlik")
-                                    .font(.subheadline)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                            }
-                            .frame(width: 150, height: 150)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                                    .opacity(oneTimeSelected ? 1 : 0.5)
-                            }
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    oneTimeSelected = true
+                            
+                            TextField("Harcadığınız para miktarı", text: $value)
+                                .padding(10)
+                                .background(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 1)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                                .keyboardType(.decimalPad)
+                                .onChange(of: value) { newValue in
+                                    // Eğer text boşsa, varsayılan olarak "" göster
+                                    if newValue.isEmpty {
+                                        value = ""
+                                    }
                                 }
+                            
+                                .padding(.horizontal, 25)
+                            
+                            
+                            
+                            
+                            DatePicker(selection: $date, displayedComponents: .date) {
+                                Text("Ödeme tarihini seçin")
                             }
-                            Spacer()
-                            VStack {
-                                Image("creditCard")
-                                    .resizable()
-                                    .frame(width: 80, height: 80)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                                Text("Aylık")
-                                    .font(.subheadline)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                            }
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    oneTimeSelected = false
+                            .padding(.horizontal, 25)
+                            
+                            
+                            TextField("Bu harcama için notunuz", text: $note)
+                                .padding()
+                                .background(Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 1)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                            
+                                .padding(.horizontal, 25)
+                                .frame(height: 50)
+                            
+                            
+                            Button(action: {
+                                if value.isEmpty || value == "0" {
+                                    showAlert = true
+                                    return
                                 }
-                            }
-                            .frame(width: 150, height: 150)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                                    .opacity(!oneTimeSelected ? 1 : 0.5)
-                            }
-                            Spacer()
-                        }
-                        
-                        Spacer()
-                        
-                        HStack {
-                            VStack {
-                                TextField("Bu harcama için notunuz", text: $note)
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 1)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    )
-                            }
-                            .padding(.leading, 25)
-                            .padding(.trailing, 20)
-                            .frame(height: 50)
-                            Spacer()
-                        }
-                        Spacer()
-                        
-                        Button(action: {
-                            if value.isEmpty || value == "0" {
-                                showAlert = true
-                                return
-                            }
-                            let amount = Double(value) ?? 0.0
-                            let expense = ExpenseModel(
-                                date: date,
-                                title: options[selectedOptionIndex].title,
-                                note: note,
-                                amount: amount,
-                                category: options[selectedOptionIndex]
-                            )
-                            Services.shared.addExpense(expense) { error in
-                                if let error = error {
-                                    print("Error adding expense: \(error)")
-                                } else {
-                                    showSuccessAlert = true
-                                    dismiss()
-                                    clearParams()
+                                let amount = Double(value) ?? 0.0
+                                let expense = ExpenseModel(
+                                    date: date,
+                                    title: viewModel.userCategories[selectedOptionIndex].title,
+                                    note: note,
+                                    amount: amount,
+                                    category: viewModel.userCategories[selectedOptionIndex]
+                                )
+                                Services.shared.addExpense(expense) { error in
+                                    if let error = error {
+                                        print("Error adding expense: \(error)")
+                                    } else {
+                                        showSuccessAlert = true
+                                        dismiss()
+                                        clearParams()
+                                    }
                                 }
-                            }
-                        }, label: {
-                            HStack {
-                                Spacer()
+                            }, label: {
                                 Text("Harcamayı Bitir")
-                                    .font(.subheadline)
-                                    .foregroundColor(.black)
-                                Spacer()
-                            }
-                            .frame(height: 90)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            }
-                        })
-                        .padding(.horizontal, 25)
+                                    .customFont(.semiBold,16)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.green)
+                                    .cornerRadius(10)
+                                    .shadow(radius: 5)
+                            })
+                            .padding(.top, 10)
+                            .padding(.horizontal, 25)
+                        }
+                        
+                        Spacer()
                     }
-                    .background(Color.white)
-                    
-                    Spacer()
                 }
             }
         }
         .sheet(isPresented: $showAddCategory) {
             AddCategoryView()
+                .environmentObject(viewModel)
         }
         .popup(isPresented: $showAlert) {
             Text("Lütfen bir harcama miktarı giriniz")
@@ -251,17 +189,17 @@ struct AddExpenseView: View {
         }
         .popup(isPresented: $showSuccessAlert) {
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.green)
-                .frame(width: 300, height: 200)
+                .fill(Color.white.opacity(0.8))
+                .frame(width: 300, height: 300)
                 .overlay(
                     VStack {
                         Text("Tamamdır!")
-                            .font(.headline)
-                            .foregroundColor(.white)
+                            .customFont(.semiBold, 20)
+                            .foregroundColor(.black)
                             .padding(.bottom, 20)
                         Text("Harcama başarıyla eklendi.")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
+                            .customFont(.regular, 16)
+                            .foregroundColor(.black)
                             .multilineTextAlignment(.center)
                     }
                         .padding()
@@ -281,50 +219,76 @@ struct AddExpenseView: View {
 }
 
 #Preview {
-    AddExpenseView(oneTimeSelected: true)
+    //AddExpenseView()
+    AddCategoryView()
 }
 
 
 struct AddCategoryView: View {
     @State var categoryName: String = ""
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var viewModel: AddExpenseViewModel
+    
     var body: some View {
         ZStack {
-            VStack{
+            Color(.systemGray6).edgesIgnoringSafeArea(.all) // Arka plan rengi
+            
+            VStack(spacing: 20) {
+                // Başlık kısmı
+                Text("Yeni Kategori Ekle")
+                    .customFont(.bold,32)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
+                    .padding(.top, 40)
+                
+                // Açıklama metni
+                Text("Harcama veya gelirlerinizi daha iyi yönetmek için bir kategori ekleyin.")
+                    .customFont(.extraLight,14)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 30)
+                
+                // Kategori giriş alanı
                 TextField("Yeni kategori giriniz", text: $categoryName)
                     .padding()
                     .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 5)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 1)
-                            .stroke(Color.black, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.green, lineWidth: 1)
                     )
-                    .keyboardType(.decimalPad)
+                    .keyboardType(.default)
+                    .padding(.horizontal, 30)
                 
+                // Kategori ekleme butonu
                 Button(action: {
                     Services.shared.addCategories([CategoryModel(title: categoryName, identifier: categoryName)]) { error in
                         if let error = error {
                             print(error)
                         }
                         else {
-                            presentationMode.wrappedValue.dismiss()
+                            viewModel.getUserCategories {
+                                presentationMode.wrappedValue.dismiss()
+                            }
                         }
                     }
                 }, label: {
-                    HStack {
-                        Spacer()
-                        Text("Kategoryi ekle")
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                        Spacer()
-                    }
-                    .frame(height: 90)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.black, lineWidth: 1)
-                    }
+                    Text("Kategori Ekle")
+                        .customFont(.semiBold,16)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .cornerRadius(10)
+                        .shadow(radius: 5)
                 })
+                .padding(.horizontal, 30)
+                
+                Spacer() // İçeriği üst kısma itmek için
+                
             }
+            .padding(.top, 20)
         }
     }
 }
-

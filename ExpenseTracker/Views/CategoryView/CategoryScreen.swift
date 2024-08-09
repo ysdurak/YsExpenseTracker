@@ -68,17 +68,28 @@ struct PieChartView: View {
     var data: [(category: CategoryModel, total: Double)]
     @Binding var showLegend: Bool
     
+    var totalAmount: Double {
+        data.reduce(0) { $0 + $1.total }
+    }
+    
     var body: some View {
-        
         Chart(data, id: \.category) { item in
+            let percentage = item.total / totalAmount * 100
+            
             SectorMark(
                 angle: .value("Total", item.total),
                 innerRadius: .ratio(0.5),
                 angularInset: 1
             )
             .foregroundStyle(by: .value("Category", item.category.title))
+            .annotation(position: .overlay, alignment: .center) {
+                Text(String(format: "%.1f%%", percentage))
+                    .customFont(.regular, 16)
+                    .foregroundColor(.white)
+            }
         }
         .chartLegend(showLegend ? .visible : .hidden)
         .chartLegend(position: .bottom, alignment: .center, spacing: 30)
     }
 }
+

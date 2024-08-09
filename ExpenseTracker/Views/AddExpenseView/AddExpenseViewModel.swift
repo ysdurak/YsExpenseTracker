@@ -4,63 +4,32 @@
 //
 //  Created by Yavuz Selim Durak on 9.08.2024.
 //
-//
-//import Foundation
-//import SwiftUI
-//import Combine
-//import FirebaseFirestore
-//
-//class AddExpenseViewModel: ObservableObject {
-//    @Published var expenseName: String = ""
-//    @Published var expenseAmount: String = ""
-//    @Published var expenseCategory: String = ""
-//    @Published var currentStep: ExpenseStep = .name
-//
-//    private var cancellables = Set<AnyCancellable>()
-//    private let db = Firestore.firestore()
-//    
-//    enum ExpenseStep {
-//        case name, amount, category, completed
-//    }
-//    
-//    func saveExpense() {
-//        guard !expenseName.isEmpty, !expenseAmount.isEmpty, !expenseCategory.isEmpty else {
-//            return
-//        }
-//
-//        let newExpense = [
-//            "name": expenseName,
-//            "amount": Double(expenseAmount) ?? 0.0,
-//            "category": expenseCategory,
-//            "date": Date()
-//        ] as [String : Any]
-//
-//        db.collection("expenses").addDocument(data: newExpense) { error in
-//            if let error = error {
-//                print("Error adding document: \(error)")
-//            } else {
-//                self.moveToNextStep()
-//            }
-//        }
-//    }
-//    
-//    func moveToNextStep() {
-//        switch currentStep {
-//        case .name:
-//            currentStep = .amount
-//        case .amount:
-//            currentStep = .category
-//        case .category:
-//            currentStep = .completed
-//        case .completed:
-//            resetForm()
-//        }
-//    }
-//
-//    func resetForm() {
-//        expenseName = ""
-//        expenseAmount = ""
-//        expenseCategory = ""
-//        currentStep = .name
-//    }
-//}
+
+import Foundation
+import SwiftUI
+import Combine
+import FirebaseFirestore
+
+class AddExpenseViewModel: ObservableObject {
+    @Published var userCategories: [CategoryModel] = []
+    @Published var isLoading: Bool = false
+    init() {
+        getUserCategories()
+    }
+    
+    func getUserCategories(completion: (() -> Void)? = nil) {
+        isLoading = true
+        Services.shared.getUserCategories { categories, error in
+            if let categories = categories {
+                Defaults.shared.userCategories = categories
+                self.userCategories = categories
+                self.isLoading = false// options dizisini güncelle
+                completion?()
+            } else {
+                self.getUserCategories()
+                print(error?.localizedDescription ?? "Unknown error")
+            }
+        }
+    }
+
+}
