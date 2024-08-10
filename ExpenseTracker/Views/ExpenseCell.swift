@@ -9,15 +9,14 @@ import Foundation
 import SwiftUI
 
 struct ExpenseCell: View {
-    var imageName: String
-    var category: String
+    var category: CategoryModel
     var amount: String
     var body: some View{
         ZStack{
             HStack{
-                Image(systemName: getImage(categoryName: category))
+                Image(systemName: getImage(categoryName: category.identifier))
                     .frame(width: 32, height: 32)
-                Text(category)
+                Text(category.title)
                     .customFont(.medium)
                 Spacer()
                 Text(amount +  " TL")
@@ -129,10 +128,24 @@ func getImage(categoryName: String) -> String! {
         return "laptopcomputer"
     case "food":
         return "fork.knife.circle"
-    case "market":
+    case "groceries":
         return "cart.fill"
-    case "game":
+    case "games":
         return "gamecontroller"
+    case "entertainment":
+        return "wand.and.stars"
+    case "subscriptions":
+        return "teletype"
+    case "vacation":
+        return "sun.haze.fill"
+    case "clothing":
+        return "tshirt"
+    case "bills":
+        return "square.and.pencil"
+    case "rent":
+        return "house.fill"
+
+    
     default:
         return "dollarsign.circle"
     }

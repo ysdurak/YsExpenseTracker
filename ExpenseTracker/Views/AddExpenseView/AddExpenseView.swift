@@ -116,7 +116,7 @@ struct AddExpenseView: View {
                             
                             
                             
-                            DatePicker(selection: $date, displayedComponents: .date) {
+                            DatePicker(selection: $date, displayedComponents: [.date, .hourAndMinute]) {
                                 Text("Ödeme tarihini seçin")
                             }
                             .padding(.horizontal, 25)
@@ -174,6 +174,7 @@ struct AddExpenseView: View {
                     }
                 }
             }
+            .dismissKeyboardOnTap()
         }
         .sheet(isPresented: $showAddCategory) {
             AddCategoryView()

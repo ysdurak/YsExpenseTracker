@@ -92,6 +92,8 @@
 		B6CF8EDB2C5FB37500C95258 /* AddIncomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8EDA2C5FB37500C95258 /* AddIncomeViewModel.swift */; };
 		B6CF8EDD2C5FB89200C95258 /* Extensions+Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */; };
 		B6D30FD72C67489B009D649D /* DailyLimitSetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D30FD62C67489B009D649D /* DailyLimitSetView.swift */; };
+		B6D30FD92C6760D5009D649D /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D30FD82C6760D5009D649D /* SearchBar.swift */; };
+		B6D30FDB2C6769B5009D649D /* Extensions+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D30FDA2C6769B5009D649D /* Extensions+View.swift */; };
 		B6E072F82C4D34E60080AE8F /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E072F72C4D34E60080AE8F /* Services.swift */; };
 		B6F4C72F2C60CB9300A54A06 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F4C72E2C60CB9300A54A06 /* TestView.swift */; };
 		B6FE99D42BD831A000A38DEB /* Extensions+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */; };
@@ -156,6 +158,8 @@
 		B6CF8EDA2C5FB37500C95258 /* AddIncomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIncomeViewModel.swift; sourceTree = "<group>"; };
 		B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Double.swift"; sourceTree = "<group>"; };
 		B6D30FD62C67489B009D649D /* DailyLimitSetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLimitSetView.swift; sourceTree = "<group>"; };
+		B6D30FD82C6760D5009D649D /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		B6D30FDA2C6769B5009D649D /* Extensions+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+View.swift"; sourceTree = "<group>"; };
 		B6E072F72C4D34E60080AE8F /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		B6F4C72E2C60CB9300A54A06 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Date.swift"; sourceTree = "<group>"; };
@@ -267,6 +271,7 @@
 			children = (
 				B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */,
 				B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */,
+				B6D30FDA2C6769B5009D649D /* Extensions+View.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -291,6 +296,7 @@
 				B64C18D42C5D597700D15483 /* TabView */,
 				B64C18D02C5D591B00D15483 /* LoginView */,
 				B64C18CC2C5D58B500D15483 /* SettingsView */,
+				B6D30FD82C6760D5009D649D /* SearchBar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -572,11 +578,13 @@
 				B655EC8A2C63691B0038A1EF /* RecentIncomesView.swift in Sources */,
 				B64C18E12C5D704C00D15483 /* ProfileViewModel.swift in Sources */,
 				B6CF8EDB2C5FB37500C95258 /* AddIncomeViewModel.swift in Sources */,
+				B6D30FD92C6760D5009D649D /* SearchBar.swift in Sources */,
 				B6CF8ED82C5FB2F300C95258 /* AddIncomeScreen.swift in Sources */,
 				B63DF1AA2BB17C5A00F4B592 /* OnboardingScreen.swift in Sources */,
 				B6785EAD2C4BEF9B0045512E /* AuthenticationManager.swift in Sources */,
 				B64C18DB2C5D5DE700D15483 /* RegisterScreenViewModel.swift in Sources */,
 				B6F4C72F2C60CB9300A54A06 /* TestView.swift in Sources */,
+				B6D30FDB2C6769B5009D649D /* Extensions+View.swift in Sources */,
 				B655EC8C2C6369260038A1EF /* RecentIncomesViewModel.swift in Sources */,
 				B6CF8ED62C5FB25B00C95258 /* IncomeModel.swift in Sources */,
 				B655EC882C63690A0038A1EF /* ExpenseDetailViewModel.swift in Sources */,

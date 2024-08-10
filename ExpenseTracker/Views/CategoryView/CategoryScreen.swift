@@ -45,7 +45,7 @@ struct CategoryScreen: View {
                             NavigationLink(
                                 destination: CategoryDetailView(category: categoryExpense.category)
                             ) {
-                                ExpenseCell(imageName: "car", category: categoryExpense.category.title, amount: categoryExpense.total.toReadableString())
+                                ExpenseCell(category: categoryExpense.category, amount: categoryExpense.total.toReadableString())
                                     .padding(.horizontal, 10)
                                     .foregroundColor(.black)
                             }

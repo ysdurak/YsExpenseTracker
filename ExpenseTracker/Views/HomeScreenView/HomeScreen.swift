@@ -17,7 +17,9 @@ struct HomeScreen: View {
     
     var body: some View {
         let daysInMonth = viewModel.generateDaysInCurrentMonth()
-        let expenseData = viewModel.generateExpenseData(for: daysInMonth, from: viewModel.monthlyExpenses)
+        let monthlyExpenseData = viewModel.generateExpenseData(for: daysInMonth, from: viewModel.monthlyExpenses)
+        let daysInWeek = viewModel.generateDaysInCurrentWeek()
+        let weeklyExpenseData = viewModel.generateExpenseData(for: daysInWeek, from: viewModel.weeklyExpenses)
         NavigationStack {
             if viewModel.isLoading {
                 ProgressView("Yükleniyor...")
@@ -39,12 +41,12 @@ struct HomeScreen: View {
                                 .padding(.leading, 20)
                             }
                             
-                            Text(viewModel.monthlyExpenseValue.toReadableString() + " TL")
+                            Text(currentTab == "Weekly" ? weeklyExpenseData.totalAmount().toReadableString() + " TL" : viewModel.monthlyExpenseValue.toReadableString() + " TL")
                                 .font(.largeTitle.bold())
                             
                             //Bar chart ll come here
                             Chart {
-                                ForEach(expenseData, id: \.date) { data in
+                                ForEach(currentTab == "Weekly" ? weeklyExpenseData : monthlyExpenseData, id: \.date) { data in
                                     BarMark(
                                         x: .value("Day", data.date, unit: .day),
                                         y: .value("Amount", data.amount)
@@ -91,19 +93,11 @@ struct HomeScreen: View {
                         }
                         .padding(.top, 10)
                         
-                        Text("Günlük limitim")
-                            .customFont(.semiBold, 16)
-                        
-                        NavigationLink {
-                            DailyLimitSetView()
-                        } label: {
-                            Text("Günlük limitim")
-                                .customFont(.regular, 16)
+                        NavigationLink(destination: DailyLimitSetView()) {
+                            DailyLimitProgressView()
+                                .environmentObject(viewModel)
+                                .foregroundStyle(Color.black)
                         }
-
-
-                        DailyLimitProgressView()
-                            .environmentObject(viewModel)
                         
                         VStack {
                             HStack {
@@ -122,11 +116,11 @@ struct HomeScreen: View {
                                     NavigationLink(
                                         destination: CategoryDetailView(category: topCategories[index].category)
                                     ) {
-                                        ExpenseCell(imageName: "car", category: topCategories[index].category.title, amount: topCategories[index].total.toReadableString())
+                                        ExpenseCell(category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
                                             .padding(.horizontal, 10)
                                             .foregroundColor(.black)
                                     }
-                                
+                                    
                                 }
                                 
                             } else {
@@ -143,6 +137,8 @@ struct HomeScreen: View {
                                         .foregroundStyle(Color.green)
                                 }
                             }
+                            Color.white
+                                .frame(height: 150)
                         }
                         .padding(.top, 10)
                         
@@ -166,37 +162,53 @@ struct HomeScreen: View {
 
 
 
-
 struct DailyLimitProgressView: View {
     @EnvironmentObject var viewModel: HomeScreenViewModel
+    
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Günlük Harcama Limiti")
-                .font(.headline)
-                .padding(.bottom, 10)
+                .customFont(.semiBold, 16)
             
-            ZStack {
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(min(viewModel.dailySpent / viewModel.dailyLimit, 1.0)))
-                    .stroke(AngularGradient(gradient: Gradient(colors: [.green, .yellow, .red]),
-                                            center: .center),
-                            style: StrokeStyle(lineWidth: 20, lineCap: .round))
-                    .rotationEffect(Angle(degrees: 270.0))
-                    .frame(width: 150, height: 150)
+            ZStack(alignment: .leading) {
+                // Background bar
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(height: 20)
                 
-                VStack {
-                    Text("\(Int(viewModel.dailySpent)) / \(Int(viewModel.dailyLimit))")
-                        .font(.title)
-                        .bold()
-                    Text("₺ harcandı")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
+                // Progress bar with gradient
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(LinearGradient(gradient: Gradient(colors: [.green, .yellow, .red]),
+                                         startPoint: .leading,
+                                         endPoint: .trailing))
+                    .frame(width: progressWidth(), height: 20)
             }
+            .animation(.easeInOut(duration: 0.5), value: viewModel.dailySpent)
+            
+            HStack {
+                Text("\(viewModel.dailySpent.toReadableString())₺")
+                    .foregroundColor(.red) // Harcama kırmızı
+                    .customFont(.light, 14) +
+                Text(" harcandı")
+                    .customFont(.light, 14)
+                Spacer()
+                Text("\((viewModel.dailyLimit - viewModel.dailySpent).toReadableString())₺")
+                    .foregroundColor(.green) // Limit yeşil
+                    .customFont(.light, 14) +
+                Text(" harcanabilir")
+                    .customFont(.light, 14)
+            }
+            .padding(.top, 5)
         }
-        .padding()
         .onAppear {
             viewModel.fetchDailyExpenses()
         }
     }
+    
+    private func progressWidth() -> CGFloat {
+        let screenWidth = UIScreen.main.bounds.width - 40 // Adjust according to your design
+        let progress = CGFloat(min(viewModel.dailySpent / viewModel.dailyLimit, 1.0))
+        return screenWidth * progress
+    }
 }
+

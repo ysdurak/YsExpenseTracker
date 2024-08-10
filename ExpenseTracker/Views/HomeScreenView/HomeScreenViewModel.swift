@@ -100,6 +100,28 @@ class HomeScreenViewModel: ObservableObject {
         return days
     }
     
+    func generateDaysInCurrentWeek() -> [Date] {
+        let calendar = Calendar.current
+        let today = Date()
+        
+        // Haftanın hangi günü olduğunu bul
+        let weekday = calendar.component(.weekday, from: today)
+        
+        // Haftanın başlangıç günü (Pazartesi)
+        let startOfWeek = calendar.date(byAdding: .day, value: -((weekday - calendar.firstWeekday) % 7), to: today)!
+        
+        // Haftanın günlerini oluştur
+        var days: [Date] = []
+        for i in 0..<7 {
+            if let date = calendar.date(byAdding: .day, value: i, to: startOfWeek) {
+                days.append(date)
+            }
+        }
+        
+        return days
+    }
+
+    
     // Helper function to match expenses to days
     func generateExpenseData(for days: [Date], from expenses: [ExpenseModel]) -> [(date: Date, amount: Double)] {
         var data: [(date: Date, amount: Double)] = []
@@ -199,3 +221,12 @@ class HomeScreenViewModel: ObservableObject {
     
 }
 
+
+
+extension Array where Element == (date: Date, amount: Double) {
+    func totalAmount() -> Double {
+        return self.reduce(0.0) { result, element in
+            result + element.amount
+        }
+    }
+}
