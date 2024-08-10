@@ -91,6 +91,7 @@
 		B6CF8ED82C5FB2F300C95258 /* AddIncomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8ED72C5FB2F300C95258 /* AddIncomeScreen.swift */; };
 		B6CF8EDB2C5FB37500C95258 /* AddIncomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8EDA2C5FB37500C95258 /* AddIncomeViewModel.swift */; };
 		B6CF8EDD2C5FB89200C95258 /* Extensions+Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */; };
+		B6D30FD72C67489B009D649D /* DailyLimitSetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D30FD62C67489B009D649D /* DailyLimitSetView.swift */; };
 		B6E072F82C4D34E60080AE8F /* Services.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E072F72C4D34E60080AE8F /* Services.swift */; };
 		B6F4C72F2C60CB9300A54A06 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F4C72E2C60CB9300A54A06 /* TestView.swift */; };
 		B6FE99D42BD831A000A38DEB /* Extensions+Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */; };
@@ -154,6 +155,7 @@
 		B6CF8ED72C5FB2F300C95258 /* AddIncomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIncomeScreen.swift; sourceTree = "<group>"; };
 		B6CF8EDA2C5FB37500C95258 /* AddIncomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIncomeViewModel.swift; sourceTree = "<group>"; };
 		B6CF8EDC2C5FB89200C95258 /* Extensions+Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Double.swift"; sourceTree = "<group>"; };
+		B6D30FD62C67489B009D649D /* DailyLimitSetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLimitSetView.swift; sourceTree = "<group>"; };
 		B6E072F72C4D34E60080AE8F /* Services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services.swift; sourceTree = "<group>"; };
 		B6F4C72E2C60CB9300A54A06 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		B6FE99D32BD831A000A38DEB /* Extensions+Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Date.swift"; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 		B64C18CA2C5D588600D15483 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B6D30FD62C67489B009D649D /* DailyLimitSetView.swift */,
 				B6B324602C661EDA0069F905 /* AddExpenseAndIncome.swift */,
 				B696D75A2BD287E100D24046 /* ExpenseCell.swift */,
 				B64C18CB2C5D58A000D15483 /* HomeScreenView */,
@@ -602,6 +605,7 @@
 				B6B324612C661EDA0069F905 /* AddExpenseAndIncome.swift in Sources */,
 				B64C18D22C5D592B00D15483 /* LoginScreenViewModel.swift in Sources */,
 				B6CDBE0E2C5C15B90067C52C /* RecentExpensesViewModel.swift in Sources */,
+				B6D30FD72C67489B009D649D /* DailyLimitSetView.swift in Sources */,
 				B696D7612BD2BE0100D24046 /* PeelEffect.swift in Sources */,
 				B6CDBE122C5C36770067C52C /* HomeScreenViewModel.swift in Sources */,
 				B6CF8EDD2C5FB89200C95258 /* Extensions+Double.swift in Sources */,

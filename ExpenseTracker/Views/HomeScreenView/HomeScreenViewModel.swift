@@ -52,6 +52,11 @@ class HomeScreenViewModel: ObservableObject {
             dispatchGroup.leave()
         }
         
+        dispatchGroup.enter()
+        fetchDailyLimit {
+            dispatchGroup.leave()
+        }
+        
         dispatchGroup.notify(queue: .main) {
             self.isLoading = false
         }
@@ -180,5 +185,17 @@ class HomeScreenViewModel: ObservableObject {
         // sonuçları döndürme
         return Array(top3)
     }
+    
+    func fetchDailyLimit(completion: @escaping () -> Void) {
+        Services.shared.getDailyLimit { [weak self] limit, error in
+            if let limit = limit {
+                self?.dailyLimit = limit
+            } else if let error = error {
+                print("Error fetching daily limit: \(error)")
+            }
+            completion()
+        }
+    }
+    
 }
 

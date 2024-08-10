@@ -94,6 +94,14 @@ struct HomeScreen: View {
                         Text("Günlük limitim")
                             .customFont(.semiBold, 16)
                         
+                        NavigationLink {
+                            DailyLimitSetView()
+                        } label: {
+                            Text("Günlük limitim")
+                                .customFont(.regular, 16)
+                        }
+
+
                         DailyLimitProgressView()
                             .environmentObject(viewModel)
                         

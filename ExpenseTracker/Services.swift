@@ -162,10 +162,41 @@ class Services {
             completion(categories, nil)
         }
     }
+    
+    func getDailyLimit(completion: @escaping (Double?, Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        db.collection("users").document(userID).getDocument { document, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
 
+            if let document = document, let data = document.data(), let dailyLimit = data["dailyLimit"] as? Double {
+                completion(dailyLimit, nil)
+            } else {
+                completion(nil, nil) // No limit set
+            }
+        }
+    }
+
+    // Set daily limit in Firestore
+    func setDailyLimit(_ limit: Double, completion: @escaping (Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
+            completion(error)
+            return
+        }
+        
+        db.collection("users").document(userID).setData(["dailyLimit": limit], merge: true) { error in
+            completion(error)
+        }
+    }
 
     
-    
+
     
     func addCategories(_ categories: [CategoryModel], completion: @escaping (Error?) -> Void) {
         guard let userID = Auth.auth().currentUser?.uid else {
@@ -236,26 +267,25 @@ class Services {
     }
     
     func fetchTodayExpenses(completion: @escaping (Double?, Error?) -> Void) {
-        guard let userID = Auth.auth().currentUser?.uid else { return }
+        guard let expensesCollection = userExpensesCollection() else {
+            completion(0.0, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
         
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
         
-        db.collection("expenses")
-            .whereField("userID", isEqualTo: userID)
-            .whereField("date", isGreaterThanOrEqualTo: startOfDay)
-            .whereField("date", isLessThanOrEqualTo: endOfDay)
-            .getDocuments { (querySnapshot, error) in
-                if let error = error {
-                    completion(nil, error)
-                    return
-                }
-                
+        
+        expensesCollection.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(nil, error)
+            } else {
                 let totalSpent = querySnapshot?.documents.compactMap { ExpenseModel(document: $0) }
                     .reduce(0) { $0 + $1.amount } ?? 0
                 
                 completion(totalSpent, nil)
             }
+        }
     }
 
     // Get Monthly Expense
