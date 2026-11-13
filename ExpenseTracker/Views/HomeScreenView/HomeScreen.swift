@@ -12,203 +12,326 @@ import Charts
 struct HomeScreen: View {
     @StateObject private var viewModel = HomeScreenViewModel()
     @EnvironmentObject var appModel: AppViewModel
-    @State private var currentTab: String = "Monthly"
-    @Environment(\.colorScheme) private var scheme
-    
+    @AppStorage("homeChartPeriod") private var period: SpendingPeriod = .month
+
     var body: some View {
-        let daysInMonth = viewModel.generateDaysInCurrentMonth()
-        let monthlyExpenseData = viewModel.generateExpenseData(for: daysInMonth, from: viewModel.monthlyExpenses)
-        let daysInWeek = viewModel.generateDaysInCurrentWeek()
-        let weeklyExpenseData = viewModel.generateExpenseData(for: daysInWeek, from: viewModel.weeklyExpenses)
         NavigationStack {
-            if viewModel.isLoading {
-                ProgressView("Yükleniyor...")
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ScrollView {
-                    VStack {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Harcamalar")
-                                    .fontWeight(.semibold)
-                                Spacer()
-                                Picker("", selection: $currentTab) {
-                                    Text("Haftalık").tag("Weekly")
-                                    Text("Aylık").tag("Monthly")
-                                }
-                                .pickerStyle(.segmented)
-                                .padding(.leading, 20)
-                            }
-                            
-                            Text(currentTab == "Weekly" ? weeklyExpenseData.totalAmount().toReadableString() + " TL" : viewModel.monthlyExpenseValue.toReadableString() + " TL")
-                                .font(.largeTitle.bold())
-                            
-                            //Bar chart ll come here
-                            Chart {
-                                ForEach(currentTab == "Weekly" ? weeklyExpenseData : monthlyExpenseData, id: \.date) { data in
-                                    BarMark(
-                                        x: .value("Day", data.date, unit: .day),
-                                        y: .value("Amount", data.amount)
-                                    )
-                                    .foregroundStyle(data.amount > 0 ? Color.green : Color.clear) // Show bars only if there's an expense
-                                }
-                            }
-                            .chartXAxis {
-                                AxisMarks(values: .stride(by: .day)) // Show x-axis labels for each day
-                            }
-                        }
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill((scheme == .dark ? Color.black : Color.white).shadow(.drop(radius: 2)))
-                        }
-                        
-                        VStack {
-                            HStack {
-                                Text("Harcama Özetim")
-                                    .customFont(.semiBold, 16)
-                                Spacer()
-                            }
-                            
-                            HStack {
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Yükleniyor...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            SpendingChartCard(
+                                period: $period,
+                                buckets: viewModel.buckets(for: period),
+                                dailyLimit: viewModel.dailyLimit
+                            )
+
+                            HStack(spacing: 12) {
                                 ExpenseSummary(
-                                    imageName: "arrow.up.square",
-                                    imageColor: Color.green,
-                                    title: "Gelirlerim",
-                                    valueText: viewModel.monthlyIncomeValue.toReadableString() + " ₺",
-                                    bgColor: .clear
-                                    
+                                    imageName: "arrow.down.left",
+                                    imageColor: .income,
+                                    title: "Bu ay gelir",
+                                    value: viewModel.monthlyIncomeValue
                                 )
-                                Spacer()
-                                    .frame(width: 10)
                                 ExpenseSummary(
-                                    imageName: "arrow.down.square",
-                                    imageColor: Color.red,
-                                    title: "Giderlerim",
-                                    valueText: viewModel.monthlyExpenseValue.toReadableString() + " ₺",
-                                    bgColor: .clear
+                                    imageName: "arrow.up.right",
+                                    imageColor: .expense,
+                                    title: "Bu ay gider",
+                                    value: viewModel.monthlyExpenseValue
                                 )
                             }
-                        }
-                        .padding(.top, 10)
-                        
-                        NavigationLink(destination: DailyLimitSetView()) {
-                            DailyLimitProgressView()
-                                .environmentObject(viewModel)
-                                .foregroundStyle(Color.black)
-                        }
-                        
-                        VStack {
-                            HStack {
-                                Text("Son Harcamalarım")
-                                    .customFont(.semiBold, 16)
-                                Spacer()
-                                NavigationLink(destination: CategoryScreen()) {
-                                    Text("Tümü")
-                                        .customFont(.semiBold, 15)
-                                        .foregroundStyle(Color.black)
-                                        .underline()
-                                }
+
+                            NavigationLink(destination: DailyLimitSetView()) {
+                                DailyLimitProgressView(spent: viewModel.dailySpent, limit: viewModel.dailyLimit)
                             }
-                            if let topCategories = viewModel.topExpenseCategories, !topCategories.isEmpty {
-                                ForEach(0..<topCategories.count, id: \.self) { index in
-                                    NavigationLink(
-                                        destination: CategoryDetailView(category: topCategories[index].category)
-                                    ) {
-                                        ExpenseCell(category: topCategories[index].category, amount: topCategories[index].total.toReadableString())
-                                            .padding(.horizontal, 10)
-                                            .foregroundColor(.black)
-                                    }
-                                    
-                                }
-                                
-                            } else {
-                                Text("Harcama bulunamadı")
-                                    .customFont(.extraLight, 16)
-                                    .padding(.top, 20)
-                                
-                                Button(action: {
-                                    appModel.currentTab = .addSomething
-                                }) {
-                                    Image(systemName: "plus.circle")
-                                        .resizable()
-                                        .frame(width: 32, height: 32)
-                                        .foregroundStyle(Color.green)
-                                }
-                            }
-                            Color.white
-                                .frame(height: 150)
+                            .buttonStyle(.plain)
+
+                            topCategories
                         }
-                        .padding(.top, 10)
-                        
-                        Spacer()
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .padding()
+                    .refreshable { viewModel.loadData() }
                 }
             }
+            .background(Color.appBackground)
+            .navigationTitle("Özet")
         }
         .onAppear {
             viewModel.loadData()
         }
     }
+
+    private var topCategories: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("En Çok Harcadığım Kategoriler")
+                    .customFont(.semiBold, 16)
+                Spacer()
+                NavigationLink(destination: CategoryScreen()) {
+                    Text("Tümü")
+                        .customFont(.medium, 14)
+                        .foregroundStyle(Color.brand)
+                }
+            }
+
+            let categories = viewModel.topExpenseCategories
+            if categories.isEmpty {
+                VStack(spacing: 12) {
+                    Text("Bu ay henüz harcama yok")
+                        .customFont(.regular, 14)
+                        .foregroundStyle(.secondary)
+                    Button {
+                        appModel.currentTab = .addSomething
+                    } label: {
+                        Label("Harcama ekle", systemImage: "plus")
+                            .font(.customFont(.semiBold, 14))
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.brand)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+            } else {
+                let total = viewModel.monthlyExpenseValue
+                ForEach(Array(categories.enumerated()), id: \.element.category) { index, item in
+                    if index > 0 { Divider().padding(.leading, 48) }
+                    NavigationLink(destination: CategoryDetailView(category: item.category)) {
+                        ExpenseCell(category: item.category, amount: item.total, share: total > 0 ? item.total / total : nil)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .card()
+    }
 }
 
+// MARK: Chart
+struct SpendingChartCard: View {
+    @Binding var period: SpendingPeriod
+    var buckets: [SpendingBucket]
+    var dailyLimit: Double
 
-#Preview{
-    HomeScreen()
+    @State private var selectedDate: Date?
+
+    private let calendar = Calendar.app
+
+    private var total: Double { buckets.reduce(0) { $0 + $1.amount } }
+    private var maxAmount: Double { buckets.map(\.amount).max() ?? 0 }
+    private var showsLimit: Bool { period != .year && dailyLimit > 0 }
+
+    private var selectedBucket: SpendingBucket? {
+        buckets.first { $0.date == selectedDate }
+    }
+
+    private func bucket(at date: Date) -> SpendingBucket? {
+        buckets.first { calendar.isDate($0.date, equalTo: date, toGranularity: period.bucketUnit) }
+    }
+
+    /// Empty days get a short placeholder bar so the timeline stays readable.
+    private var placeholderHeight: Double {
+        max(maxAmount, showsLimit ? dailyLimit : 0, 1) * 0.025
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Picker("Dönem", selection: $period) {
+                ForEach(SpendingPeriod.allCases) { period in
+                    Text(period.title).tag(period)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(selectedBucket.map(selectionLabel) ?? period.label)
+                    .customFont(.regular, 13)
+                    .foregroundStyle(.secondary)
+                Text((selectedBucket?.amount ?? total).currency)
+                    .customFont(.bold, 30)
+                    .foregroundStyle(.primary)
+                    .contentTransition(.numericText())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .animation(.snappy, value: selectedBucket?.amount ?? total)
+
+            chart
+                .frame(height: 190)
+        }
+        .card()
+        .onChange(of: period) { selectedDate = nil }
+    }
+
+    private var chart: some View {
+        Chart {
+            ForEach(buckets) { bucket in
+                let isEmpty = bucket.amount == 0
+                BarMark(
+                    x: .value("Tarih", bucket.date, unit: period.bucketUnit),
+                    y: .value("Tutar", isEmpty ? placeholderHeight : bucket.amount),
+                    width: .ratio(0.6)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: period == .month ? 3 : 6, style: .continuous))
+                .foregroundStyle(barStyle(for: bucket, isEmpty: isEmpty))
+            }
+
+            if showsLimit {
+                RuleMark(y: .value("Limit", dailyLimit))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    .foregroundStyle(Color.orange.opacity(0.8))
+                    .annotation(position: .top, alignment: .leading, spacing: 2) {
+                        Text("Günlük limit")
+                            .customFont(.regular, 10)
+                            .foregroundStyle(.orange)
+                    }
+            }
+        }
+        .chartOverlay { proxy in
+            GeometryReader { geometry in
+                Rectangle()
+                    .fill(.clear)
+                    .contentShape(Rectangle())
+                    // Tap a bar to inspect it, tap it again to go back to the total.
+                    // A plain tap keeps the surrounding ScrollView scrollable.
+                    .onTapGesture { location in
+                        guard let plotFrame = proxy.plotFrame else { return }
+                        let x = location.x - geometry[plotFrame].origin.x
+                        guard let date: Date = proxy.value(atX: x), let tapped = bucket(at: date)?.date else {
+                            selectedDate = nil
+                            return
+                        }
+                        selectedDate = tapped == selectedDate ? nil : tapped
+                    }
+            }
+        }
+        .chartXAxis { xAxis }
+        .chartYAxis {
+            AxisMarks(position: .trailing, values: .automatic(desiredCount: 4)) { value in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 3]))
+                AxisValueLabel {
+                    if let amount = value.as(Double.self) {
+                        Text(amount.formatted(.number.notation(.compactName).locale(.turkish)))
+                    }
+                }
+            }
+        }
+        .environment(\.calendar, calendar)
+        .environment(\.locale, .turkish)
+        .sensoryFeedback(.selection, trigger: selectedBucket?.date)
+        .animation(.snappy, value: buckets)
+    }
+
+    @AxisContentBuilder
+    private var xAxis: some AxisContent {
+        switch period {
+        case .week:
+            AxisMarks(values: .stride(by: .day)) { value in
+                axisLabel(value, format: .dateTime.weekday(.abbreviated))
+            }
+        case .month:
+            AxisMarks(values: .stride(by: .day, count: 5)) { value in
+                axisLabel(value, format: .dateTime.day())
+            }
+        case .year:
+            AxisMarks(values: .stride(by: .month)) { value in
+                axisLabel(value, format: .dateTime.month(.narrow))
+            }
+        }
+    }
+
+    /// Charts ignores the environment locale for axis dates, so format them in Turkish explicitly.
+    private func axisLabel(_ value: AxisValue, format: Date.FormatStyle) -> AxisValueLabel<Text> {
+        AxisValueLabel(centered: true) {
+            Text(value.as(Date.self)?.formatted(format.locale(.turkish)) ?? "")
+        }
+    }
+
+    private func barStyle(for bucket: SpendingBucket, isEmpty: Bool) -> Color {
+        if isEmpty { return Color(.systemFill) }
+        if let selectedBucket, selectedBucket.date != bucket.date {
+            return Color.brand.opacity(0.3)
+        }
+        return Color.brand
+    }
+
+    private func selectionLabel(_ bucket: SpendingBucket) -> String {
+        switch period {
+        case .year:
+            bucket.date.formatted(.dateTime.month(.wide).year().locale(.turkish))
+        default:
+            bucket.date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(.turkish))
+        }
+    }
 }
 
-
-
+// MARK: Daily limit
 struct DailyLimitProgressView: View {
-    @EnvironmentObject var viewModel: HomeScreenViewModel
-    
+    var spent: Double
+    var limit: Double
+
+    private var progress: Double { limit > 0 ? min(spent / limit, 1) : 0 }
+    private var isOverLimit: Bool { limit > 0 && spent > limit }
+
+    private var tint: Color {
+        switch progress {
+        case ..<0.6: .green
+        case ..<0.9: .orange
+        default: .red
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Günlük Harcama Limiti")
-                .customFont(.semiBold, 16)
-            
-            ZStack(alignment: .leading) {
-                // Background bar
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(height: 20)
-                
-                // Progress bar with gradient
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(LinearGradient(gradient: Gradient(colors: [.green, .yellow, .red]),
-                                         startPoint: .leading,
-                                         endPoint: .trailing))
-                    .frame(width: progressWidth(), height: 20)
-            }
-            .animation(.easeInOut(duration: 0.5), value: viewModel.dailySpent)
-            
             HStack {
-                Text("\(viewModel.dailySpent.toReadableString())₺")
-                    .foregroundColor(.red) // Harcama kırmızı
-                    .customFont(.light, 14) +
-                Text(" harcandı")
-                    .customFont(.light, 14)
+                Text("Günlük Harcama Limiti")
+                    .customFont(.semiBold, 16)
+                    .foregroundStyle(.primary)
                 Spacer()
-                Text("\((viewModel.dailyLimit - viewModel.dailySpent).toReadableString())₺")
-                    .foregroundColor(.green) // Limit yeşil
-                    .customFont(.light, 14) +
-                Text(" harcanabilir")
-                    .customFont(.light, 14)
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
             }
-            .padding(.top, 5)
+
+            if limit > 0 {
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color(.systemFill))
+                        Capsule()
+                            .fill(tint.gradient)
+                            .frame(width: proxy.size.width * progress)
+                    }
+                }
+                .frame(height: 10)
+                .animation(.easeInOut(duration: 0.5), value: progress)
+
+                HStack {
+                    (Text(spent.currency).foregroundStyle(.primary) + Text(" harcandı").foregroundStyle(.secondary))
+                        .customFont(.regular, 13)
+                    Spacer()
+                    if isOverLimit {
+                        Text("\((spent - limit).currency) aşıldı")
+                            .customFont(.medium, 13)
+                            .foregroundStyle(.red)
+                    } else {
+                        (Text((limit - spent).currency).foregroundStyle(Color.brand) + Text(" kaldı").foregroundStyle(.secondary))
+                            .customFont(.regular, 13)
+                    }
+                }
+            } else {
+                Text("Harcamalarını kontrol altında tutmak için günlük bir limit belirle.")
+                    .customFont(.regular, 13)
+                    .foregroundStyle(.secondary)
+            }
         }
-        .onAppear {
-            viewModel.fetchDailyExpenses()
-        }
-    }
-    
-    private func progressWidth() -> CGFloat {
-        let screenWidth = UIScreen.main.bounds.width - 40 // Adjust according to your design
-        let progress = CGFloat(min(viewModel.dailySpent / viewModel.dailyLimit, 1.0))
-        return screenWidth * progress
+        .card()
     }
 }
 
+#Preview {
+    HomeScreen()
+        .environmentObject(AppViewModel())
+}

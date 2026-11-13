@@ -36,7 +36,7 @@ struct RegisterScreen: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .frame(width: 20, height: 20)
-                            .foregroundColor(.black)
+                            .foregroundStyle(.primary)
                             .padding()
                     })
                 }
@@ -45,7 +45,7 @@ struct RegisterScreen: View {
                     .frame(height: 20)
                 
                 Text("Hemen kayıt ol ve biriktirmeye başla!")
-                    .customFont(.bold, 42)
+                    .customFont(.bold, 34)
                     .multilineTextAlignment(.leading)
                     .frame(alignment: .leading)
                     .padding(.horizontal)
@@ -55,22 +55,15 @@ struct RegisterScreen: View {
                 
                 VStack(spacing: 20) {
                     TextField("E-mail", text: $viewModel.email)
-                        .padding()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(UIColor.separator), lineWidth: 1)
-                        )
+                        .fieldStyle()
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                     
                     SecureField("Şifre", text: $viewModel.password)
-                        .padding()
-                        .background(Color(UIColor.secondarySystemBackground))
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color(UIColor.separator), lineWidth: 1)
-                        )
+                        .fieldStyle()
+                        .textContentType(.newPassword)
                 }
                 .padding(.horizontal, 30)
                 
@@ -79,10 +72,10 @@ struct RegisterScreen: View {
                 
                 VStack(spacing: 10) {
                     HStack {
-                        Toggle(isOn: $acceptedPrivacyPolicy) {
+                        Toggle(isOn: $acceptedPrivacyPolicy.animation()) {
                             Text("Gizlilik Politikasını kabul ediyorum")
                                 .font(.footnote)
-                                .foregroundColor(.blue)
+                                .foregroundStyle(Color.brand)
                                 .underline()
                                 .onTapGesture {
                                     showPrivacyPolicy.toggle()
@@ -95,7 +88,7 @@ struct RegisterScreen: View {
                         Toggle(isOn: $acceptedTermsOfService) {
                             Text("Hizmet Şartlarını kabul ediyorum")
                                 .font(.footnote)
-                                .foregroundColor(.blue)
+                                .foregroundStyle(Color.brand)
                                 .underline()
                                 .onTapGesture {
                                     showTermsOfService.toggle()
@@ -120,15 +113,9 @@ struct RegisterScreen: View {
                     }
                 }, label: {
                     Text("Kayıt Ol")
-                        .customFont(.semiBold,16)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
                 })
-                .padding(.horizontal, 20)
+                .buttonStyle(.primary)
+                .padding(.horizontal, 30)
                 
                 
                 Spacer()

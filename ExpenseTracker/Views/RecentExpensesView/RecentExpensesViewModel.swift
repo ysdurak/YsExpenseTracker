@@ -19,16 +19,16 @@ class RecentExpensesViewModel: ObservableObject, ExpenseHandling {
     }
     
     var filteredExpenses: [ExpenseModel] {
-        if searchText.isEmpty {
-            return expenses
-        } else {
-            return expenses.filter { expense in
-                expense.note.lowercased().contains(searchText.lowercased()) ||
-                expense.category.title.lowercased().contains(searchText.lowercased())
+        let query = searchText.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { return expenses }
+        // Case- and diacritic-insensitive, so "gida" matches "Gıda".
+        return expenses.filter { expense in
+            [expense.note, expense.title, expense.category.title].contains {
+                $0.range(of: query, options: [.caseInsensitive, .diacriticInsensitive], locale: .turkish) != nil
             }
         }
     }
-    
+
     func fetchExpenses(for category: String) {
         
     }

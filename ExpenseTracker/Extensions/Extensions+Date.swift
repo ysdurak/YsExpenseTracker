@@ -9,20 +9,24 @@ import Foundation
 
 extension Date {
     func dayOfMonth() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd"
-        return dateFormatter.string(from: self)
+        formatted(.dateTime.day(.twoDigits).locale(.turkish))
     }
-    
+
     func monthAndYear() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM yyyy"
-        return dateFormatter.string(from: self)
+        formatted(.dateTime.month(.abbreviated).year().locale(.turkish))
     }
-    
+
     func timeOfDay() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "hh:mm a"
-        return dateFormatter.string(from: self)
+        formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).locale(.turkish))
+    }
+
+    /// "Bugün", "Dün", "12 Kasım" or "12 Kasım 2025".
+    func sectionTitle(calendar: Calendar = .app) -> String {
+        if calendar.isDateInToday(self) { return "Bugün" }
+        if calendar.isDateInYesterday(self) { return "Dün" }
+        if calendar.isDate(self, equalTo: Date(), toGranularity: .year) {
+            return formatted(.dateTime.day().month(.wide).locale(.turkish))
+        }
+        return formatted(.dateTime.day().month(.wide).year().locale(.turkish))
     }
 }

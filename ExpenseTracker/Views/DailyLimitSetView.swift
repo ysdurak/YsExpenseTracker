@@ -16,35 +16,28 @@ struct DailyLimitSetView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGray6).edgesIgnoringSafeArea(.all)
+            Color.appBackground.ignoresSafeArea()
             
             VStack(spacing: 20) {
                 Text("Günlük harcama limitini belirle")
-                    .customFont(.bold, 32)
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
+                    .customFont(.bold, 28)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
                     .padding(.top, 40)
                 
                 Text("Harcama veya gelirlerinizi daha iyi yönetmek için günlük harcama limitinizi belirleyiniz.")
-                    .customFont(.extraLight, 14)
-                    .foregroundColor(.gray)
+                    .customFont(.regular, 14)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
                 
                 TextField("Limitinizi giriniz", text: $limitAmount)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.green, lineWidth: 1)
-                    )
+                    .fieldStyle()
                     .keyboardType(.decimalPad)
                     .padding(.horizontal, 30)
                 
                 Button(action: {
-                    guard let limit = Double(limitAmount) else {
+                    guard let limit = limitAmount.amountValue, limit > 0 else {
                         alertMessage = "Lütfen geçerli bir limit giriniz."
                         showAlert = true
                         return
@@ -59,14 +52,8 @@ struct DailyLimitSetView: View {
                     }
                 }, label: {
                     Text("Limiti Belirle")
-                        .customFont(.semiBold, 16)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
                 })
+                .buttonStyle(.primary)
                 .padding(.horizontal, 30)
                 .alert(isPresented: $showAlert) {
                     Alert(title: Text("Bilgi"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))

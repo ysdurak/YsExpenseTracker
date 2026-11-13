@@ -28,19 +28,14 @@ struct LoginScreen: View {
                         .customFont(.regular, 16)
                     VStack{
                         TextField("E-mail", text: $viewModel.email)
-                            .padding()
-                            .background(Color.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
+                            .fieldStyle()
+                            .textContentType(.emailAddress)
+                            .keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
                         SecureField("Şifre", text: $viewModel.password)
-                            .padding()
-                            .background(Color.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
+                            .fieldStyle()
+                            .textContentType(.password)
                         
                         Spacer()
                             .frame(height: 20)
@@ -51,14 +46,8 @@ struct LoginScreen: View {
                             }
                         }, label: {
                             Text("Giriş yap")
-                                .customFont(.semiBold,16)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(10)
-                                .shadow(radius: 5)
                         })
+                        .buttonStyle(.primary)
                         
                         Spacer()
                             .frame(height: 20)
@@ -68,15 +57,16 @@ struct LoginScreen: View {
                             showRegisterSheet.toggle()
                         }) {
                             Text("Hesabın yok mu ? Kayıt ol")
-                                .customFont(.light, 14)
-                                .foregroundColor(.blue)
+                                .customFont(.medium, 14)
+                                .foregroundStyle(Color.brand)
                         }
                         .sheet(isPresented: $showRegisterSheet) {
                             RegisterScreen()
                         }
                         
                     }
-                    .padding(.all, 10)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
                     Spacer()
                 }
             }

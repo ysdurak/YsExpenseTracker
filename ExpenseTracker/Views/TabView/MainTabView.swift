@@ -12,7 +12,6 @@ struct MainTabView: View {
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Expense.date, ascending: false)]) var expense: FetchedResults<Expense>
     @StateObject var appModel: AppViewModel = .init()
     @StateObject var authViewModel = AuthViewModel()
-    @State private var isKeyboardVisible = false
     @State private var showSignInView = false
     @Namespace var animation
     
@@ -23,24 +22,23 @@ struct MainTabView: View {
         UITabBar.appearance().isHidden = true
     }
     var body: some View {
-        ZStack{
+        ZStack(alignment: .bottom) {
             if authViewModel.isLoading {
-                VStack{
-                    ProgressView("Yükleniyor...")
-                }
+                ProgressView("Yükleniyor...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             else {
                 TabView(selection: $appModel.currentTab) {
-                    
+
                     HomeScreen()
                         .environmentObject(appModel)
                         .tag(Tab.home)
                         .setUpTab()
-                    
+
                     RecentExpensesView()
                         .tag(Tab.cart)
                         .setUpTab()
-                    
+
                     AddExpenseAndIncome()
                         .tag(Tab.addSomething)
                         .setUpTab()
@@ -51,9 +49,9 @@ struct MainTabView: View {
                         .tag(Tab.profile)
                         .setUpTab()
                 }
-                
+
                 CustomTabBar(currentTab: $appModel.currentTab, animation: animation)
-                    .offset(y: UIScreen.main.bounds.height / 2 - 50)
+                    .ignoresSafeArea(.keyboard)
             }
 
         }
@@ -80,6 +78,9 @@ struct MainTabView: View {
         func setUpTab()->some View{
             self
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Keep content clear of the custom tab bar.
+                .safeAreaPadding(.bottom, 64)
+                .toolbar(.hidden, for: .tabBar)
         }
     }
 

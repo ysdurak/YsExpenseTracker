@@ -10,25 +10,46 @@ import SwiftUI
 
 struct ExpenseCell: View {
     var category: CategoryModel
-    var amount: String
-    var body: some View{
-        ZStack{
-            HStack{
-                Image(systemName: getImage(categoryName: category.identifier))
-                    .frame(width: 32, height: 32)
-                Text(category.title)
-                    .customFont(.medium)
-                Spacer()
-                Text(amount +  " TL")
-                    .customFont(.medium)
+    var amount: Double
+    var share: Double? = nil
+
+    var body: some View {
+        HStack(spacing: 12) {
+            CategoryIcon(identifier: category.identifier)
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(category.title)
+                        .customFont(.medium, 15)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text(amount.currency)
+                        .customFont(.semiBold, 15)
+                        .foregroundStyle(.primary)
+                }
+                if let share {
+                    HStack(spacing: 8) {
+                        GeometryReader { proxy in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color(.systemFill))
+                                Capsule()
+                                    .fill(categoryColor(identifier: category.identifier))
+                                    .frame(width: proxy.size.width * min(max(share, 0), 1))
+                            }
+                        }
+                        .frame(height: 5)
+                        Text(share.formatted(.percent.precision(.fractionLength(0)).locale(.turkish)))
+                            .customFont(.regular, 12)
+                            .foregroundStyle(.secondary)
+                            .frame(minWidth: 36, alignment: .trailing)
+                    }
+                }
             }
-            .padding(10)
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
         }
-        .frame(maxWidth: .infinity)
-        .overlay{
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(style: StrokeStyle())
-        }
+        .padding(.vertical, 6)
+        .contentShape(Rectangle())
     }
 }
 
@@ -36,119 +57,105 @@ struct ExpenseSummary: View {
     var imageName: String
     var imageColor: Color
     var title: String
-    var valueText: String
-    var bgColor: Color
+    var value: Double
+
     var body: some View {
-        ZStack{
-            HStack{
-                Image(systemName: imageName)    
-                    .frame(width: 36,height: 36)
-                    .foregroundStyle(imageColor)
-                Spacer()
-                    .frame(width: 20)
-                VStack{
-                    Text(title)
-                        .customFont(.light)
-                    Text(valueText)
-                        .customFont(.medium)
-                    
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            Image(systemName: imageName)
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(imageColor)
+                .frame(width: 32, height: 32)
+                .background(imageColor.opacity(0.15), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .customFont(.regular, 13)
+                    .foregroundStyle(.secondary)
+                Text(value.currency)
+                    .customFont(.semiBold, 18)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
-            .padding(20)
         }
-        .frame(maxWidth: .infinity)
-        .overlay {
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(style: StrokeStyle())
-                .background(bgColor.cornerRadius(10))
-        }
+        .card()
     }
 }
 
 struct RecentExpensesCell: View {
-    
-    var date: Date 
+    var date: Date
     var category: CategoryModel
     var note: String
     var value: Double
-    
-    var body: some View {
-        ZStack{
-            HStack{
-                VStack{
-                    Text(date.dayOfMonth())
-                        .customFont(.light, 24)
-                        .foregroundStyle(.black.opacity(0.8))
-                    Text(date.monthAndYear())
-                        .customFont(.extraLight, 12)
-                        .foregroundStyle(.black.opacity(0.8))
-                    Text(date.timeOfDay())
-                        .customFont(.extraLight,12)
-                        .foregroundStyle(.black.opacity(0.8))
-                }
-                
-                Spacer()
-                    .frame(width: 10)
-                
-                VStack{
-                    HStack{
-                        Image(systemName: getImage(categoryName: category.identifier))
-                        Text(category.title)
-                            .customFont(.regular, 16)
-                        Spacer()
-                    }
-                    HStack{
-                        Text(note)
-                            .customFont(.light, 12)
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                    
-                }
-                Spacer()
-                Text("\(Int(value)) ₺")
-                    .customFont(.semiBold, 16)
-            }
-            .padding(10)
-        }
-        .background(Color.white.cornerRadius(10))
-        .overlay{
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(style: StrokeStyle())
-        }
-    }
-    
 
+    var body: some View {
+        HStack(spacing: 12) {
+            CategoryIcon(identifier: category.identifier, size: 40)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(category.title)
+                    .customFont(.medium, 15)
+                    .foregroundStyle(.primary)
+                Text(note.isEmpty ? date.timeOfDay() : "\(note) · \(date.timeOfDay())")
+                    .customFont(.regular, 12)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            Spacer(minLength: 8)
+            Text("−" + value.currency)
+                .customFont(.semiBold, 15)
+                .foregroundStyle(.primary)
+                .monospacedDigit()
+        }
+        .padding(.vertical, 2)
+    }
 }
 
-func getImage(categoryName: String) -> String! {
+func getImage(categoryName: String) -> String {
     switch categoryName {
     case "technology":
         return "laptopcomputer"
     case "food":
-        return "fork.knife.circle"
+        return "fork.knife"
     case "groceries":
         return "cart.fill"
     case "games":
-        return "gamecontroller"
+        return "gamecontroller.fill"
     case "entertainment":
         return "wand.and.stars"
     case "subscriptions":
-        return "teletype"
+        return "play.rectangle.fill"
     case "vacation":
-        return "sun.haze.fill"
+        return "sun.max.fill"
     case "clothing":
-        return "tshirt"
+        return "tshirt.fill"
     case "bills":
-        return "square.and.pencil"
+        return "doc.text.fill"
     case "rent":
         return "house.fill"
     case "other":
-        return "ellipsis.circle"
-
-    
+        return "ellipsis"
     default:
-        return "dollarsign.circle"
+        return "turkishlirasign"
+    }
+}
+
+/// Fixed color per category so the chart, icons and list always agree.
+func categoryColor(identifier: String) -> Color {
+    switch identifier {
+    case "technology": return .blue
+    case "food": return .orange
+    case "groceries": return .green
+    case "games": return .purple
+    case "entertainment": return .pink
+    case "subscriptions": return .indigo
+    case "vacation": return .yellow
+    case "clothing": return .mint
+    case "bills": return .red
+    case "rent": return .brown
+    case "other": return .gray
+    default:
+        // Custom categories (e.g. from scanning) get a stable color from their identifier.
+        let palette: [Color] = [.teal, .cyan, .indigo, .orange, .purple, .mint, .pink, .blue]
+        let hash = identifier.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
+        return palette[abs(hash) % palette.count]
     }
 }

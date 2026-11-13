@@ -75,7 +75,8 @@ extension Font {
         case .extraLight:
             Font.custom("Poppins-ExtraLight", size: size)
         case .light:
-            Font.custom("Poppins-Light", size: size)
+            // Poppins-Light is not bundled; Regular is the closest available weight.
+            Font.custom("Poppins-Regular", size: size)
         case .regular:
             Font.custom("Poppins-Regular", size: size)
         }

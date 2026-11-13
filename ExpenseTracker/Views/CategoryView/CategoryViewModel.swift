@@ -7,38 +7,20 @@
 
 import Foundation
 
-
-
 class CategoryViewModel: ObservableObject {
     @Published var categoryExpenses: [(category: CategoryModel, total: Double)]?
-    
-    init(){
-        
-    }
-    
-    func sumUpExpenseCategories(expenses: [ExpenseModel]) -> [(category: CategoryModel, total: Double)] {
-        
-        var categoryTotals: [CategoryModel: Double] = [:]
-        for expense in expenses {
-            categoryTotals[expense.category, default: 0] += expense.amount
-        }
 
-        let allCategories = categoryTotals.sorted { $0.value > $1.value }.map { (key, value) in
-            (category: key, total: value)
-        }
-        
-        return allCategories
-    }
-    
-    func fetchMonthlyExpenses() {
-        Services.shared.getMonthlyExpenses { [weak self] expenses, error in
-            if let expenses = expenses {
-                DispatchQueue.main.async {
-                    self?.categoryExpenses = self?.sumUpExpenseCategories(expenses: expenses)
-                    
+    func fetchExpenses(for period: SpendingPeriod) {
+        let interval = period.interval()
+        Services.shared.getExpensesByDate(startDate: interval.start, endDate: interval.end) { [weak self] expenses, error in
+            DispatchQueue.main.async {
+                if let expenses {
+                    self?.categoryExpenses = expenses.within(interval).categoryTotals()
+                } else if let error {
+                    print("Error fetching category expenses: \(error)")
+                    self?.categoryExpenses = []
                 }
             }
         }
     }
-    
 }

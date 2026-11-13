@@ -18,38 +18,35 @@ struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                HStack {
-                    Text("Harcama Detayları")
-                        .customFont(.bold, 18)
-                        .padding(.leading)
-                    Spacer()
-                    Button(action: {
-                        isEditing.toggle()
-                    }) {
-                        Image(systemName: "pencil")
-                            .font(.title2)
-                    }
-                    .padding(.trailing)
-                    .padding(.top, 10)
+                VStack(spacing: 8) {
+                    CategoryIcon(identifier: expense.category.identifier, size: 56)
+                    Text(expense.amount.currency)
+                        .customFont(.bold, 34)
+                    Text(expense.category.title)
+                        .customFont(.medium, 15)
+                        .foregroundStyle(.secondary)
                 }
-                
-                Divider()
-                    .padding(.vertical, 5)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    detailRow(iconName: "tag", title: "Kategori", value: expense.category.title)
-                    detailRow(iconName: "note.text", title: "Not", value: expense.note ?? "Bu harcama için not yok")
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+
+                VStack(alignment: .leading, spacing: 0) {
+                    detailRow(iconName: "note.text", title: "Not", value: expense.note.isEmpty ? "Bu harcama için not yok" : expense.note)
+                    Divider().padding(.leading, 56)
                     detailRow(iconName: "calendar", title: "Tarih", value: expense.date, formatter: DateFormatter.longDateFormatter)
+                    Divider().padding(.leading, 56)
                     detailRow(iconName: "clock", title: "Saat", value: expense.date, formatter: DateFormatter.timeFormatter)
-                    detailRow(iconName: "dollarsign.circle", title: "Tutar", value: "\(String(format: "%.2f", expense.amount)) ₺")
                 }
-                .background(Color.white)
-                .cornerRadius(15)
-                .shadow(radius: 5)
+                .background(Color.cardBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .padding(15)
                 
                 Spacer()
             }
+        }
+        .background(Color.appBackground)
+        .navigationTitle("Harcama Detayları")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button("Düzenle") { isEditing.toggle() }
         }
         .sheet(isPresented: $isEditing) {
             EditExpenseView(expense: $expense, viewModel: self.viewModel, source: self.source)
@@ -59,23 +56,20 @@ struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
     private func detailRow(iconName: String, title: String, value: String) -> some View {
         HStack {
             Image(systemName: iconName)
-                .foregroundColor(.blue)
+                .foregroundStyle(Color.brand)
                 .frame(width: 30, height: 30)
-                .background(Color(UIColor.systemGroupedBackground))
-                .cornerRadius(15)
-            VStack(alignment: .leading) {
+                .background(Color.brand.opacity(0.12), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
-                    .foregroundColor(.gray)
+                    .customFont(.regular, 13)
+                    .foregroundStyle(.secondary)
                 Text(value)
-                    .font(.title3)
-                    .fontWeight(.semibold)
+                    .customFont(.medium, 16)
             }
             Spacer()
         }
-        .padding()
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(15)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
     }
     
     private func detailRow(iconName: String, title: String, value: Date, formatter: DateFormatter) -> some View {
@@ -86,12 +80,14 @@ struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
 extension DateFormatter {
     static let longDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = .turkish
         formatter.dateStyle = .long
         return formatter
     }()
     
     static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = .turkish
         formatter.timeStyle = .short
         return formatter
     }()

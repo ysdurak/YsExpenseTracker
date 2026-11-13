@@ -15,11 +15,21 @@ struct SettingsScreen: View {
 
     var body: some View {
         List {
-            Button(action: {
-                viewModel.signOut(authViewModel: authViewModel)
-            }, label: {
-                Text("Çıkış Yap")
-            })
+            Section {
+                NavigationLink(destination: DailyLimitSetView()) {
+                    Label("Günlük Limit", systemImage: "gauge.with.dots.needle.33percent")
+                }
+            }
+            Section {
+                Button(role: .destructive) {
+                    viewModel.signOut(authViewModel: authViewModel)
+                } label: {
+                    Label("Çıkış Yap", systemImage: "rectangle.portrait.and.arrow.right")
+                        .foregroundStyle(.red)
+                }
+            }
         }
+        .navigationTitle("Ayarlar")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

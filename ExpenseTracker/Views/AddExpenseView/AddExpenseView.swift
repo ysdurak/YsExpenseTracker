@@ -32,7 +32,8 @@ struct AddExpenseView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             ScrollView {
-                if viewModel.isLoading {
+                // Categories arrive asynchronously; the form indexes into them, so wait until they exist.
+                if viewModel.isLoading || viewModel.userCategories.isEmpty {
                     VStack{
                         ProgressView("Yükleniyor...")
                     }
@@ -52,7 +53,7 @@ struct AddExpenseView: View {
                             RecentExpensesCell(date: date,
                                                category: viewModel.userCategories[selectedOptionIndex],
                                                note: note,
-                                               value: Double(value) ?? 0)
+                                               value: value.amountValue ?? 0)
                             .padding(.horizontal, 20)
                             
                             
@@ -65,8 +66,8 @@ struct AddExpenseView: View {
                                 Button {
                                     showAddCategory = true
                                 } label: {
-                                    Image(systemName: "cross.circle.fill")
-                                        .foregroundColor(.green)
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(Color.brand)
                                 }
                                 
                             }
@@ -84,19 +85,16 @@ struct AddExpenseView: View {
                                     }
                                 } label: {
                                     HStack {
+                                        CategoryIcon(identifier: viewModel.userCategories[selectedOptionIndex].identifier, size: 26)
                                         Text(viewModel.userCategories[selectedOptionIndex].title)
-                                            .foregroundColor(.black)
+                                            .foregroundStyle(.primary)
                                         Spacer()
-                                        Image(systemName: "chevron.down")
-                                            .foregroundColor(.black)
+                                        Image(systemName: "chevron.up.chevron.down")
+                                            .foregroundStyle(.secondary)
                                     }
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 3)
-                                            .stroke(Color.black, lineWidth: 1)
-                                    }
+                                    .fieldStyle()
                                 }
+                                .tint(.primary)
                                 
                                 .padding(.horizontal, 25)
                                 .frame(height: 55)
@@ -109,12 +107,7 @@ struct AddExpenseView: View {
                             
                             
                             TextField("Harcadığınız para miktarı", text: $value)
-                                .padding(10)
-                                .background(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 1)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
+                                .fieldStyle()
                                 .keyboardType(.decimalPad)
                                 .onChange(of: value) { newValue in
                                     // Eğer text boşsa, varsayılan olarak "" göster
@@ -129,29 +122,24 @@ struct AddExpenseView: View {
                             
                             
                             DatePicker(selection: $date, displayedComponents: [.date, .hourAndMinute]) {
-                                Text("Ödeme tarihini seçin")
+                                Text("Ödeme tarihi")
+                                    .customFont(.regular, 15)
                             }
+                            .environment(\.locale, .turkish)
+                            .tint(.brand)
                             .padding(.horizontal, 25)
                             
                             
                             TextField("Bu harcama için notunuz", text: $note)
-                                .padding()
-                                .background(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 1)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                            
+                                .fieldStyle()
                                 .padding(.horizontal, 25)
-                                .frame(height: 50)
                             
                             
                             Button(action: {
-                                if value.isEmpty || value == "0" {
+                                guard let amount = value.amountValue, amount > 0 else {
                                     showAlert = true
                                     return
                                 }
-                                let amount = Double(value) ?? 0.0
                                 let expense = ExpenseModel(
                                     date: date,
                                     title: viewModel.userCategories[selectedOptionIndex].title,
@@ -169,15 +157,9 @@ struct AddExpenseView: View {
                                     }
                                 }
                             }, label: {
-                                Text("Harcamayı Bitir")
-                                    .customFont(.semiBold,16)
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green)
-                                    .cornerRadius(10)
-                                    .shadow(radius: 5)
+                                Text("Harcamayı Kaydet")
                             })
+                            .buttonStyle(.primary)
                             .padding(.top, 10)
                             .padding(.horizontal, 25)
                         }
@@ -193,8 +175,7 @@ struct AddExpenseView: View {
                     .ignoresSafeArea()
                 ProgressView("Taranıyor...")
                     .padding(24)
-                    .background(Color.white)
-                    .cornerRadius(12)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .frame(maxWidth: .infinity)
             }
         }
@@ -236,31 +217,16 @@ struct AddExpenseView: View {
                 .environmentObject(viewModel)
         }
         .popup(isPresented: $showAlert) {
-            Text("Lütfen bir harcama miktarı giriniz")
-                .frame(width: 200, height: 60)
-                .background(Color(red: 0.85, green: 0.8, blue: 0.95))
-                .cornerRadius(30.0)
+            Label("Lütfen geçerli bir harcama miktarı giriniz", systemImage: "exclamationmark.circle.fill")
+                .font(.customFont(.medium, 14))
+                .padding(.horizontal, 18)
+                .padding(.vertical, 14)
+                .background(.regularMaterial, in: Capsule())
         } customize: {
             $0.autohideIn(2)
         }
         .popup(isPresented: $showSuccessAlert) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white.opacity(0.8))
-                .frame(width: 300, height: 300)
-                .overlay(
-                    VStack {
-                        Text("Tamamdır!")
-                            .customFont(.semiBold, 20)
-                            .foregroundColor(.black)
-                            .padding(.bottom, 20)
-                        Text("Harcama başarıyla eklendi.")
-                            .customFont(.regular, 16)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-                    }
-                        .padding()
-                )
-                .padding()
+            SuccessToast(title: "Tamamdır!", message: "Harcama başarıyla eklendi.")
         } customize: {
             $0.autohideIn(2)
         }
@@ -287,13 +253,10 @@ struct AddExpenseView: View {
             Text(title)
                 .customFont(.medium, 14)
         }
-        .foregroundColor(.green)
+        .foregroundStyle(Color.brand)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.green, lineWidth: 1)
-        )
+        .background(Color.brand.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     func loadImages(_ items: [PhotosPickerItem]) async -> [UIImage] {
@@ -333,33 +296,25 @@ struct AddCategoryView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGray6).edgesIgnoringSafeArea(.all) // Arka plan rengi
+            Color.appBackground.ignoresSafeArea() // Arka plan rengi
             
             VStack(spacing: 20) {
                 // Başlık kısmı
                 Text("Yeni Kategori Ekle")
-                    .customFont(.bold,32)
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
+                    .customFont(.bold, 28)
+                    .foregroundStyle(.primary)
                     .padding(.top, 40)
                 
                 // Açıklama metni
                 Text("Harcama veya gelirlerinizi daha iyi yönetmek için bir kategori ekleyin.")
-                    .customFont(.extraLight,14)
-                    .foregroundColor(.gray)
+                    .customFont(.regular, 14)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
                 
                 // Kategori giriş alanı
                 TextField("Yeni kategori giriniz", text: $categoryName)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.green, lineWidth: 1)
-                    )
+                    .fieldStyle()
                     .keyboardType(.default)
                     .padding(.horizontal, 30)
                 
@@ -377,14 +332,9 @@ struct AddCategoryView: View {
                     }
                 }, label: {
                     Text("Kategori Ekle")
-                        .customFont(.semiBold,16)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
                 })
+                .buttonStyle(.primary)
+                .disabled(categoryName.trimmingCharacters(in: .whitespaces).isEmpty)
                 .padding(.horizontal, 30)
                 
                 Spacer() // İçeriği üst kısma itmek için

@@ -51,14 +51,9 @@ struct ScanReviewView: View {
                                     .tint(.white)
                             }
                             Text("Seçilenleri ekle (\(viewModel.selectedCount))")
-                                .customFont(.semiBold, 16)
                         }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.selectedCount == 0 ? Color.gray : Color.green)
-                        .cornerRadius(10)
                     }
+                    .buttonStyle(PrimaryButtonStyle(color: viewModel.selectedCount == 0 ? .gray : .brand))
                     .disabled(viewModel.selectedCount == 0 || viewModel.isSaving)
                 }
                 .padding(.horizontal, 20)
@@ -104,7 +99,7 @@ struct ScanReviewRow: View {
                                 .stroke((row.amount ?? 0) > 0 ? Color.gray.opacity(0.4) : Color.red, lineWidth: 1)
                         )
                         .frame(maxWidth: 120)
-                    Text("TL")
+                    Text("₺")
                         .customFont(.medium, 14)
                     Spacer()
                     Menu {
@@ -119,7 +114,7 @@ struct ScanReviewRow: View {
                             Image(systemName: "chevron.down")
                                 .font(.caption2)
                         }
-                        .foregroundColor(.black)
+                        .foregroundStyle(.primary)
                     }
                 }
 
@@ -155,9 +150,9 @@ struct ScanReviewRow: View {
             }
         }
         .padding(12)
-        .background(Color.white)
+        .background(Color.cardBackground, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .stroke(row.isSelected && row.isComplete ? Color.green : Color.gray.opacity(0.4), lineWidth: 1)
         )
     }

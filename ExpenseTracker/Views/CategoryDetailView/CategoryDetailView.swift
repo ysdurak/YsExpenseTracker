@@ -11,43 +11,41 @@ import SwiftUI
 struct CategoryDetailView: View {
     let category: CategoryModel
     @StateObject var viewModel = CategoryDetailViewModel()
-    
+
     var body: some View {
-        ZStack{
-            VStack {
-                Text("Kategori: \(category.title)")
-                    .font(.headline)
-                
-                List {
-                    ForEach(viewModel.expenses, id: \.id) { expense in
-                        NavigationLink(destination: ExpenseDetailView(expense: expense, viewModel: viewModel, source: .category)
-                        ) {
-                            RecentExpensesCell(
-                                date: expense.date,
-                                category: expense.category,
-                                note: expense.note,
-                                value: expense.amount
-                            )
-                        }
-                        .swipeActions(allowsFullSwipe: true) {
-                            Button {
-                                viewModel.deleteExpense(id: expense.id ?? "")
-                            } label: {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
+        Group {
+            if viewModel.expenses.isEmpty {
+                ContentUnavailableView(
+                    "Harcama yok",
+                    systemImage: getImage(categoryName: category.identifier),
+                    description: Text("\(category.title) kategorisinde harcama bulunamadı.")
+                )
+            } else {
+                ExpenseList(expenses: viewModel.expenses, viewModel: viewModel, source: .category)
+                    .safeAreaInset(edge: .top, spacing: 0) {
+                        HStack(spacing: 12) {
+                            CategoryIcon(identifier: category.identifier, size: 44)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Toplam")
+                                    .customFont(.regular, 13)
+                                    .foregroundStyle(.secondary)
+                                Text(viewModel.expenses.total().currency)
+                                    .customFont(.bold, 22)
                             }
+                            Spacer()
                         }
+                        .card()
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(Color.appBackground)
                     }
-                }
-                .listStyle(PlainListStyle())
-                
-                Spacer()
             }
-            .onAppear {
-                viewModel.fetchExpenses(for: category) // Kategoriyi viewModel'e gönder
-            }}
+        }
+        .background(Color.appBackground)
+        .navigationTitle(category.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.fetchExpenses(for: category)
+        }
     }
 }
-
-
-

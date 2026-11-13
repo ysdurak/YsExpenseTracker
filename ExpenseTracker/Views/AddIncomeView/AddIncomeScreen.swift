@@ -15,7 +15,7 @@ struct AddIncomeScreen: View {
     @State var category: String = ""
     @State var date: Date = Date()
     @State var note: String = ""
-    @State var value: String = "0"
+    @State var value: String = ""
     @State var showAlert: Bool = false
     @State var showSuccessAlert: Bool = false
     @State var selectedOptionIndex = 0
@@ -41,17 +41,10 @@ struct AddIncomeScreen: View {
                             .padding(.leading, 25)
                         
                         
-                            TextField("Kazandığınız para miktarı", text: $value)
-                                .padding()
-                                .background(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 1)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                                .keyboardType(.decimalPad)
-                        
-                        .padding(.horizontal, 25)
-                        .frame(height: 50)
+                        TextField("Kazandığınız para miktarı", text: $value)
+                            .fieldStyle()
+                            .keyboardType(.decimalPad)
+                            .padding(.horizontal, 25)
                         
                         
                         
@@ -65,26 +58,21 @@ struct AddIncomeScreen: View {
                             Text("Tarih seçin")
                                 .customFont(.regular, 14)
                         }
+                        .environment(\.locale, .turkish)
+                        .tint(.brand)
                         .padding(.horizontal, 25)
                         
                         TextField("Bu gelir kalemi için notunuz", text: $note)
-                            .padding()
-                            .background(Color.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 1)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
+                            .fieldStyle()
                             .padding(.top, 5)
                             .padding(.horizontal, 25)
-                            .frame(height: 50)
                         
                         
                         Button(action: {
-                            if value.isEmpty || value == "0" {
+                            guard let amount = value.amountValue, amount > 0 else {
                                 showAlert = true
                                 return
                             }
-                            let amount = Double(value) ?? 0.0
                             let income = IncomeModel(
                                 date: date,
                                 title: options[selectedOptionIndex],
@@ -101,50 +89,28 @@ struct AddIncomeScreen: View {
                                 }
                             }
                         }, label: {
-                            Text("Gelir girişini bitir")
-                                .customFont(.semiBold,16)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(10)
-                                .shadow(radius: 5)
+                            Text("Geliri Kaydet")
                         })
+                        .buttonStyle(.primary)
                         .padding(.top, 10)
                         .padding(.horizontal, 25)
                     }
-                    .background(Color.white)
                     
                     Spacer()
                 }
             }
         }
         .popup(isPresented: $showAlert) {
-            Text("Lütfen bir gelir miktarı giriniz")
-                .frame(width: 200, height: 60)
-                .background(Color(red: 0.85, green: 0.8, blue: 0.95))
-                .cornerRadius(30.0)
+            Label("Lütfen geçerli bir gelir miktarı giriniz", systemImage: "exclamationmark.circle.fill")
+                .font(.customFont(.medium, 14))
+                .padding(.horizontal, 18)
+                .padding(.vertical, 14)
+                .background(.regularMaterial, in: Capsule())
         } customize: {
             $0.autohideIn(2)
         }
         .popup(isPresented: $showSuccessAlert) {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.green)
-                .frame(width: 300, height: 200)
-                .overlay(
-                    VStack {
-                        Text("Tamamdır!")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.bottom, 20)
-                        Text("Gelir başarıyla eklendi.")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                    }
-                        .padding()
-                )
-                .padding()
+            SuccessToast(title: "Tamamdır!", message: "Gelir başarıyla eklendi.")
         } customize: {
             $0.autohideIn(2)
         }
