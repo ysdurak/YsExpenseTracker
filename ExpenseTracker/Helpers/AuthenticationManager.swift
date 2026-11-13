@@ -69,40 +69,46 @@ import Combine
 
 class AuthViewModel: ObservableObject {
     @Published var isAuthenticated: Bool = false
-    @Published var isLoading: Bool = false
-    
-    init() {
-        checkAuthentication()
-    }
-    
+    @Published var isLoading: Bool = true
 
-    func checkAuthentication() {
-        isLoading = true
-        AuthenticationManager.shared.getAuthenticatedUser { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.isAuthenticated = user.uid != nil
-                self?.getCategories()
-            case .failure:
-                self?.isAuthenticated = false
-            }
-        }
-    }
-    
-    func getCategories(){
-        Services.shared.getUserCategories { categories, error in
-            if let categories = categories {
-                Defaults.shared.userCategories = categories
+    private var authListener: AuthStateDidChangeListenerHandle?
+
+    init() {
+        // Firebase reports the restored session on launch and every later sign in / sign out,
+        // so the UI follows the real auth state instead of a one-off check.
+        authListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            guard let self else { return }
+            if user != nil {
+                self.isLoading = true
+                self.isAuthenticated = true
+                self.getCategories()
+            } else {
+                self.isAuthenticated = false
                 self.isLoading = false
             }
-            else {
-                return
+        }
+    }
+
+    deinit {
+        if let authListener {
+            Auth.auth().removeStateDidChangeListener(authListener)
+        }
+    }
+
+    func getCategories() {
+        Services.shared.getUserCategories { categories, error in
+            DispatchQueue.main.async {
+                if let categories, !categories.isEmpty {
+                    Defaults.shared.userCategories = categories
+                } else {
+                    if let error { print("Error fetching categories: \(error)") }
+                    Defaults.shared.userCategories = Defaults.shared.categories
+                }
+                self.isLoading = false
             }
         }
     }
-    
-    
-    
+
     func signOut(completion: @escaping (Result<Void, Error>) -> Void) {
         AuthenticationManager.shared.signOut { result in
             switch result {

@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import PhotosUI
 import VisionKit
-import PopupView
 
 struct AddExpenseView: View {
     @Environment(\.dismiss) var dismiss
@@ -23,8 +22,7 @@ struct AddExpenseView: View {
     @State var date: Date = Date()
     @State var note: String = ""
     @State var value: String = ""
-    @State var showAlert: Bool = false
-    @State var showSuccessAlert: Bool = false
+    @State var alert: AppAlert?
     @State var showAddCategory: Bool = false
     @State var selectedOptionIndex = 0
     
@@ -137,7 +135,7 @@ struct AddExpenseView: View {
                             
                             Button(action: {
                                 guard let amount = value.amountValue, amount > 0 else {
-                                    showAlert = true
+                                    alert = AppAlert(kind: .warning, title: "Tutar eksik", message: "Lütfen geçerli bir harcama miktarı giriniz.")
                                     return
                                 }
                                 let expense = ExpenseModel(
@@ -149,9 +147,9 @@ struct AddExpenseView: View {
                                 )
                                 Services.shared.addExpense(expense) { error in
                                     if let error = error {
-                                        print("Error adding expense: \(error)")
+                                        alert = AppAlert(kind: .error, title: "Harcama kaydedilemedi", message: error.localizedDescription)
                                     } else {
-                                        showSuccessAlert = true
+                                        alert = AppAlert(kind: .success, title: "Harcama eklendi", message: "\(amount.currency) tutarındaki harcaman kaydedildi.")
                                         dismiss()
                                         clearParams()
                                     }
@@ -204,32 +202,24 @@ struct AddExpenseView: View {
         }
         .sheet(isPresented: $scanViewModel.showReview) {
             ScanReviewView(viewModel: scanViewModel) {
-                showSuccessAlert = true
+                alert = AppAlert(kind: .success, title: "Harcamalar eklendi", message: "Seçtiğin harcamalar kaydedildi.")
             }
         }
-        .alert("Bu görselde işlem bulunamadı", isPresented: $scanViewModel.showNothingFound) {
-            Button("Elle ekle", role: .cancel) {}
-        } message: {
-            Text(scanViewModel.errorMessage ?? "Harcamayı aşağıdaki formdan elle ekleyebilirsiniz.")
+        .onChange(of: scanViewModel.showNothingFound) { _, nothingFound in
+            guard nothingFound else { return }
+            scanViewModel.showNothingFound = false
+            alert = AppAlert(
+                kind: .warning,
+                title: "İşlem bulunamadı",
+                message: scanViewModel.errorMessage ?? "Bu görselde bir harcama bulamadık. Harcamayı formdan elle ekleyebilirsin.",
+                primary: .init(title: "Elle ekle")
+            )
         }
         .sheet(isPresented: $showAddCategory) {
             AddCategoryView()
                 .environmentObject(viewModel)
         }
-        .popup(isPresented: $showAlert) {
-            Label("Lütfen geçerli bir harcama miktarı giriniz", systemImage: "exclamationmark.circle.fill")
-                .font(.customFont(.medium, 14))
-                .padding(.horizontal, 18)
-                .padding(.vertical, 14)
-                .background(.regularMaterial, in: Capsule())
-        } customize: {
-            $0.autohideIn(2)
-        }
-        .popup(isPresented: $showSuccessAlert) {
-            SuccessToast(title: "Tamamdır!", message: "Harcama başarıyla eklendi.")
-        } customize: {
-            $0.autohideIn(2)
-        }
+        .appAlert($alert)
     }
     
     var scanButtons: some View {

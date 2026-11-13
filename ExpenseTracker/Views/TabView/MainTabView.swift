@@ -27,6 +27,11 @@ struct MainTabView: View {
                 ProgressView("Yükleniyor...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            else if !authViewModel.isAuthenticated {
+                // The login screen covers this; tabs are only built once there is a user,
+                // so every screen loads that user's data when it first appears.
+                Color.appBackground.ignoresSafeArea()
+            }
             else {
                 TabView(selection: $appModel.currentTab) {
 
@@ -54,9 +59,6 @@ struct MainTabView: View {
                     .ignoresSafeArea(.keyboard)
             }
 
-        }
-        .onAppear {
-            authViewModel.checkAuthentication()
         }
         .fullScreenCover(isPresented: Binding(
             get: { !authViewModel.isAuthenticated },

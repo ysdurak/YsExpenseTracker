@@ -11,8 +11,8 @@ import SwiftUI
 
 struct DailyLimitSetView: View {
     @State private var limitAmount: String = ""
-    @State private var showAlert = false
-    @State private var alertMessage = ""
+    @State private var alert: AppAlert?
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack {
@@ -38,26 +38,27 @@ struct DailyLimitSetView: View {
                 
                 Button(action: {
                     guard let limit = limitAmount.amountValue, limit > 0 else {
-                        alertMessage = "Lütfen geçerli bir limit giriniz."
-                        showAlert = true
+                        alert = AppAlert(kind: .warning, title: "Limit eksik", message: "Lütfen geçerli bir limit giriniz.")
                         return
                     }
                     Services.shared.setDailyLimit(limit) { error in
                         if let error = error {
-                            alertMessage = "Limit belirlenirken hata oluştu: \(error.localizedDescription)"
+                            alert = AppAlert(kind: .error, title: "Limit kaydedilemedi", message: error.localizedDescription)
                         } else {
-                            alertMessage = "Günlük limit başarıyla kaydedildi."
+                            alert = AppAlert(
+                                kind: .success,
+                                title: "Limit kaydedildi",
+                                message: "Günlük harcama limitin \(limit.currency) olarak belirlendi.",
+                                primary: .init(title: "Tamam") { dismiss() }
+                            )
                         }
-                        showAlert = true
                     }
                 }, label: {
                     Text("Limiti Belirle")
                 })
                 .buttonStyle(.primary)
                 .padding(.horizontal, 30)
-                .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Bilgi"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))
-                }
+                .appAlert($alert)
                 
                 Spacer()
             }

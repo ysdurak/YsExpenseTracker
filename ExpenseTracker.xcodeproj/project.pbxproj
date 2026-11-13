@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -103,7 +103,6 @@
 /* Begin PBXFileReference section */
 		6EF73389C7C699F1000B3B70 /* DocumentScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		A69CD736A9005AA1A9E0D315 /* ScanReviewView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScanReviewView.swift; sourceTree = "<group>"; };
-		AB32A0220053F10B0CE0D19B /* ExpenseScanner */ = {isa = PBXFileReference; includeInIndex = 1; path = ExpenseScanner; sourceTree = "<group>"; };
 		B600A0462BB2CA2500AAB3E6 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		B600A0482BB2CADD00AAB3E6 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		B600A04A2BB2D38000AAB3E6 /* AddExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExpenseView.swift; sourceTree = "<group>"; };
@@ -228,7 +227,6 @@
 			children = (
 				B63DF1A62BB17C5A00F4B592 /* ExpenseTracker */,
 				B63DF1A52BB17C5A00F4B592 /* Products */,
-				AB32A0220053F10B0CE0D19B /* ExpenseScanner */,
 			);
 			sourceTree = "<group>";
 		};
@@ -467,7 +465,6 @@
 				A69CD736A9005AA1A9E0D315 /* ScanReviewView.swift */,
 				6EF73389C7C699F1000B3B70 /* DocumentScannerView.swift */,
 			);
-			name = ScanExpenseView;
 			path = ScanExpenseView;
 			sourceTree = "<group>";
 		};
@@ -774,6 +771,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Fişlerinizi tarayıp harcamaları otomatik eklemek için kamera erişimi gerekir.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -804,6 +802,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Fişlerinizi tarayıp harcamaları otomatik eklemek için kamera erişimi gerekir.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

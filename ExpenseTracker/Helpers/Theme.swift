@@ -197,26 +197,147 @@ extension [ExpenseModel] {
     }
 }
 
-// MARK: Toast
-struct SuccessToast: View {
+// MARK: Alert
+/// App-styled replacement for system alerts and the old PopupView toasts.
+struct AppAlert: Identifiable {
+    enum Kind {
+        case success, error, warning, info
+
+        var icon: String {
+            switch self {
+            case .success: "checkmark"
+            case .error: "xmark"
+            case .warning: "exclamationmark"
+            case .info: "info"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .success: .brand
+            case .error: .red
+            case .warning: .orange
+            case .info: .blue
+            }
+        }
+    }
+
+    struct Action {
+        var title: String
+        var handler: (() -> Void)? = nil
+    }
+
+    let id = UUID()
+    var kind: Kind
     var title: String
-    var message: String
+    var message: String? = nil
+    var primary = Action(title: "Tamam")
+    var secondary: Action? = nil
+}
+
+private struct AppAlertCard: View {
+    let alert: AppAlert
+    let dismiss: (AppAlert.Action?) -> Void
+
+    @State private var isVisible = false
 
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(Color.brand)
-                .symbolEffect(.bounce, value: title)
-            Text(title)
-                .customFont(.semiBold, 20)
-            Text(message)
-                .customFont(.regular, 15)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+        ZStack {
+            Color.black.opacity(isVisible ? 0.35 : 0)
+                .ignoresSafeArea()
+
+            VStack(spacing: 14) {
+                Image(systemName: alert.kind.icon)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(alert.kind.color)
+                    .frame(width: 56, height: 56)
+                    .background(alert.kind.color.opacity(0.15), in: Circle())
+                    .padding(.bottom, 2)
+
+                Text(alert.title)
+                    .customFont(.semiBold, 18)
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+
+                if let message = alert.message {
+                    Text(message)
+                        .customFont(.regular, 14)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                VStack(spacing: 4) {
+                    Button(alert.primary.title) { close(with: alert.primary) }
+                        .buttonStyle(PrimaryButtonStyle(color: alert.kind == .error ? .red : .brand))
+
+                    if let secondary = alert.secondary {
+                        Button { close(with: secondary) } label: {
+                            Text(secondary.title)
+                                .customFont(.medium, 15)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                        }
+                    }
+                }
+                .padding(.top, 6)
+            }
+            .padding(24)
+            .frame(maxWidth: 320)
+            .background(Color.cardBackground, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .shadow(color: .black.opacity(0.15), radius: 24, y: 8)
+            .padding(.horizontal, 32)
+            .scaleEffect(isVisible ? 1 : 0.94)
+            .opacity(isVisible ? 1 : 0)
         }
-        .padding(28)
-        .frame(width: 260)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .sensoryFeedback(alert.kind == .success ? .success : (alert.kind == .error ? .error : .warning), trigger: isVisible) { _, visible in visible }
+        .onAppear {
+            withAnimation(.snappy(duration: 0.25)) { isVisible = true }
+        }
+    }
+
+    private func close(with action: AppAlert.Action) {
+        withAnimation(.easeOut(duration: 0.18)) {
+            isVisible = false
+        } completion: {
+            dismiss(action)
+        }
+    }
+}
+
+private struct AppAlertModifier: ViewModifier {
+    @Binding var alert: AppAlert?
+    @State private var presented: AppAlert?
+
+    func body(content: Content) -> some View {
+        content
+            // A clear full-screen cover sits above tab bars and sheets; the card animates itself,
+            // so the system slide-up transition is switched off.
+            .fullScreenCover(item: $presented) { alert in
+                AppAlertCard(alert: alert) { action in
+                    withoutAnimation {
+                        presented = nil
+                        self.alert = nil
+                    }
+                    action?.handler?()
+                }
+                .presentationBackground(.clear)
+            }
+            .onChange(of: alert?.id) {
+                withoutAnimation { presented = alert }
+            }
+    }
+
+    private func withoutAnimation(_ body: () -> Void) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction, body)
+    }
+}
+
+extension View {
+    func appAlert(_ alert: Binding<AppAlert?>) -> some View {
+        modifier(AppAlertModifier(alert: alert))
     }
 }

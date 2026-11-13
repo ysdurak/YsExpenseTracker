@@ -8,20 +8,15 @@
 import Foundation
 import SwiftUI
 
-enum ActiveAlert {
-    case first, second
-}
-
 struct RegisterScreen: View {
     @StateObject private var viewModel = RegisterScreenViewModel()
     @Environment(\.presentationMode) var presentationMode
-    @State var showingError = false
-    @State var showSuccess = false
+    @State private var alert: AppAlert?
+    @State private var isRegistering = false
     @State var showPrivacyPolicy = false
     @State var showTermsOfService = false
     @State private var acceptedPrivacyPolicy = false
     @State private var acceptedTermsOfService = false
-    @State private var activeAlert: ActiveAlert = .first
     
     var body: some View {
         ZStack {
@@ -102,19 +97,28 @@ struct RegisterScreen: View {
                     .frame(height: 20)
                 
                 Button(action: {
-                    viewModel.registerUser { succes in
-                        if succes {
-                            activeAlert = .first
+                    guard acceptedPrivacyPolicy, acceptedTermsOfService else {
+                        alert = AppAlert(kind: .warning, title: "Onay gerekli", message: "Devam etmek için Gizlilik Politikası ve Hizmet Şartlarını kabul etmelisin.")
+                        return
+                    }
+                    isRegistering = true
+                    // On success Firebase signs the new user in and AuthViewModel opens the app.
+                    viewModel.registerUser { success in
+                        isRegistering = false
+                        if !success {
+                            alert = AppAlert(kind: .error, title: "Kayıt olunamadı", message: viewModel.errorMes)
                         }
-                        else {
-                            activeAlert = .second
-                        }
-                        showSuccess = true
                     }
                 }, label: {
-                    Text("Kayıt Ol")
+                    HStack(spacing: 8) {
+                        if isRegistering {
+                            ProgressView().tint(.white)
+                        }
+                        Text(isRegistering ? "Kayıt olunuyor..." : "Kayıt Ol")
+                    }
                 })
                 .buttonStyle(.primary)
+                .disabled(isRegistering)
                 .padding(.horizontal, 30)
                 
                 
@@ -127,22 +131,7 @@ struct RegisterScreen: View {
         .sheet(isPresented: $showTermsOfService, content: {
             TermsOfServiceView()
         })
-        .alert(isPresented: $showSuccess) {
-            switch activeAlert {
-            case .first:
-                return             Alert(title: Text("Kayıt Başarılı"), message: Text("Başarıyla kayıt olundu! Lütfen giriş yapınız."), dismissButton: .default(Text("Tamam"), action: {
-                    self.presentationMode.wrappedValue.dismiss()
-                    showSuccess = false // Reset the alert state if needed
-                }))
-            case .second:
-                return             Alert(title: Text("Hata"), message: Text(viewModel.errorMes), dismissButton: .default(Text("Tamam"), action: {
-                    showingError = false // Reset the alert state if needed
-                }))
-            }
-            
-            
-            
-        }
+        .appAlert($alert)
         
     }
 }

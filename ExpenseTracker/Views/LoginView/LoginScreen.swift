@@ -13,7 +13,6 @@ struct LoginScreen: View {
     @StateObject private var viewModel = LoginScreenViewModel()
     @EnvironmentObject  var authViewModel: AuthViewModel
     @State var showRegisterSheet: Bool = false
-    @State var showingAlert: Bool = false
     var body: some View {
         NavigationStack {
             ZStack{
@@ -41,13 +40,18 @@ struct LoginScreen: View {
                             .frame(height: 20)
                         
                         Button(action: {
-                            viewModel.signIn {
-                                authViewModel.isAuthenticated = true
-                            }
+                            // AuthViewModel's listener takes over once Firebase signs the user in.
+                            viewModel.signIn()
                         }, label: {
-                            Text("Giriş yap")
+                            HStack(spacing: 8) {
+                                if viewModel.isSigningIn {
+                                    ProgressView().tint(.white)
+                                }
+                                Text(viewModel.isSigningIn ? "Giriş yapılıyor..." : "Giriş yap")
+                            }
                         })
                         .buttonStyle(.primary)
+                        .disabled(viewModel.isSigningIn)
                         
                         Spacer()
                             .frame(height: 20)
@@ -70,16 +74,7 @@ struct LoginScreen: View {
                     Spacer()
                 }
             }
-            .alert(isPresented: $showingAlert, content: {
-                Alert(title: Text("Hata"), message: Text(viewModel.errorMes ?? "Bir hata oluştu"), dismissButton: .default(Text("Tamam"), action: {
-                    viewModel.showAlert = false // Reset the alert state if needed
-                }))
-            })
-            .onChange(of: viewModel.showAlert) { newValue in
-                if newValue {
-                    showingAlert = true
-                }
-            }
+            .appAlert($viewModel.alert)
         }
     }
 }
