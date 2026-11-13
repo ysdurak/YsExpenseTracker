@@ -144,6 +144,8 @@ func getImage(categoryName: String) -> String! {
         return "square.and.pencil"
     case "rent":
         return "house.fill"
+    case "other":
+        return "ellipsis.circle"
 
     
     default:

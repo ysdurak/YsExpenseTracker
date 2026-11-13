@@ -7,11 +7,19 @@
 
 import Foundation
 import SwiftUI
+import PhotosUI
+import VisionKit
 import PopupView
 
 struct AddExpenseView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject var viewModel = AddExpenseViewModel()
+    @StateObject var scanViewModel = ScanExpenseViewModel()
+    @State var showReceiptOptions: Bool = false
+    @State var showDocumentScanner: Bool = false
+    @State var showReceiptPicker: Bool = false
+    @State var receiptItem: PhotosPickerItem?
+    @State var screenshotItems: [PhotosPickerItem] = []
     @State var date: Date = Date()
     @State var note: String = ""
     @State var value: String = ""
@@ -31,6 +39,10 @@ struct AddExpenseView: View {
                 }
                 else {
                     VStack {
+                        scanButtons
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 10)
+
                         VStack(alignment: .leading, spacing: 15) {
                             Text("Harcama Detayları")
                                 .font(.headline)
@@ -175,6 +187,49 @@ struct AddExpenseView: View {
                 }
             }
             .dismissKeyboardOnTap()
+
+            if scanViewModel.isProcessing {
+                Color.black.opacity(0.2)
+                    .ignoresSafeArea()
+                ProgressView("Taranıyor...")
+                    .padding(24)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .confirmationDialog("Fiş tara", isPresented: $showReceiptOptions) {
+            if VNDocumentCameraViewController.isSupported {
+                Button("Kamerayla tara") { showDocumentScanner = true }
+            }
+            Button("Galeriden seç") { showReceiptPicker = true }
+        }
+        .fullScreenCover(isPresented: $showDocumentScanner) {
+            DocumentScannerView { images in
+                scan(images, source: .receipt)
+            }
+            .ignoresSafeArea()
+        }
+        .photosPicker(isPresented: $showReceiptPicker, selection: $receiptItem, matching: .images)
+        .onChange(of: receiptItem) { item in
+            guard let item else { return }
+            receiptItem = nil
+            Task { scan(await loadImages([item]), source: .receipt) }
+        }
+        .onChange(of: screenshotItems) { items in
+            guard !items.isEmpty else { return }
+            screenshotItems = []
+            Task { scan(await loadImages(items), source: .bankScreenshot) }
+        }
+        .sheet(isPresented: $scanViewModel.showReview) {
+            ScanReviewView(viewModel: scanViewModel) {
+                showSuccessAlert = true
+            }
+        }
+        .alert("Bu görselde işlem bulunamadı", isPresented: $scanViewModel.showNothingFound) {
+            Button("Elle ekle", role: .cancel) {}
+        } message: {
+            Text(scanViewModel.errorMessage ?? "Harcamayı aşağıdaki formdan elle ekleyebilirsiniz.")
         }
         .sheet(isPresented: $showAddCategory) {
             AddCategoryView()
@@ -211,6 +266,52 @@ struct AddExpenseView: View {
         }
     }
     
+    var scanButtons: some View {
+        HStack(spacing: 12) {
+            Button {
+                showReceiptOptions = true
+            } label: {
+                scanButtonLabel(title: "Fiş tara", systemImage: "camera.fill")
+            }
+
+            PhotosPicker(selection: $screenshotItems, maxSelectionCount: 10, matching: .images) {
+                scanButtonLabel(title: "Ekran görüntüsü", systemImage: "photo.on.rectangle")
+            }
+        }
+        .disabled(scanViewModel.isProcessing)
+    }
+
+    func scanButtonLabel(title: String, systemImage: String) -> some View {
+        HStack {
+            Image(systemName: systemImage)
+            Text(title)
+                .customFont(.medium, 14)
+        }
+        .foregroundColor(.green)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.green, lineWidth: 1)
+        )
+    }
+
+    func loadImages(_ items: [PhotosPickerItem]) async -> [UIImage] {
+        var images: [UIImage] = []
+        for item in items {
+            if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                images.append(image)
+            }
+        }
+        return images
+    }
+
+    func scan(_ images: [UIImage], source: ScanExpenseViewModel.Source) {
+        Task {
+            await scanViewModel.process(images, source: source, userCategories: viewModel.userCategories)
+        }
+    }
+
     func clearParams() {
         date = Date()
         note = ""

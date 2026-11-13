@@ -20,7 +20,11 @@ class AddExpenseViewModel: ObservableObject {
     func getUserCategories(completion: (() -> Void)? = nil) {
         isLoading = true
         Services.shared.getUserCategories { categories, error in
-            if let categories = categories {
+            if var categories = categories {
+                // Accounts without saved categories would crash the picker, fall back to the defaults
+                if categories.isEmpty {
+                    categories = Defaults.shared.categories
+                }
                 Defaults.shared.userCategories = categories
                 self.userCategories = categories
                 self.isLoading = false// options dizisini güncelle

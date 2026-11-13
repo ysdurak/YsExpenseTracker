@@ -328,6 +328,47 @@ class Services {
         }
     }
 
+    // Merchant category corrections the user made while reviewing scans, keyed by MerchantCategorizer.ruleKey
+    func getMerchantRules(completion: @escaping ([String: String]?, Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        db.collection("users").document(userID).collection("merchantRules").getDocuments { querySnapshot, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            var rules: [String: String] = [:]
+            for document in querySnapshot?.documents ?? [] {
+                if let identifier = document.data()["categoryIdentifier"] as? String {
+                    rules[document.documentID] = identifier
+                }
+            }
+            completion(rules, nil)
+        }
+    }
+
+    // Saves scanned expenses, new merchant rules and missing categories in one batch: all or nothing
+    func addScannedExpenses(_ expenses: [ExpenseModel], merchantRules: [String: String], newCategories: [CategoryModel], completion: @escaping (Error?) -> Void) {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            completion(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"]))
+            return
+        }
+        let userDocument = db.collection("users").document(userID)
+        let batch = db.batch()
+        for expense in expenses {
+            batch.setData(expense.toDictionary(), forDocument: userDocument.collection("expenses").document())
+        }
+        for (key, identifier) in merchantRules {
+            batch.setData(["categoryIdentifier": identifier], forDocument: userDocument.collection("merchantRules").document(key))
+        }
+        for category in newCategories {
+            batch.setData(category.toDictionary(), forDocument: userDocument.collection("categories").document(category.identifier))
+        }
+        batch.commit(completion: completion)
+    }
+
     // Delete Expense
     func deleteExpense(id: String, completion: @escaping (Error?) -> Void) {
         guard let expensesCollection = userExpensesCollection() else {

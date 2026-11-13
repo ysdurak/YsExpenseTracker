@@ -25,6 +25,10 @@ class Defaults {
         CategoryModel(title: "Eğlence", identifier: "entertainment"),
         CategoryModel(title: "Tatil", identifier: "vacation"),
         CategoryModel(title: "Kira", identifier: "rent"),
-        CategoryModel(title: "Abonelikler", identifier: "subscriptions")
+        CategoryModel(title: "Abonelikler", identifier: "subscriptions"),
+        Defaults.otherCategory
     ]
+
+    // Fallback for scanned expenses whose merchant matches no category
+    static let otherCategory = CategoryModel(title: "Diğer", identifier: "other")
 }
