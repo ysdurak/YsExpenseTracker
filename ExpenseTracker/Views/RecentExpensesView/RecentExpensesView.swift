@@ -87,5 +87,6 @@ struct ExpenseList<ViewModel: ExpenseHandling>: View {
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
+        .tabBarSafeArea()
     }
 }

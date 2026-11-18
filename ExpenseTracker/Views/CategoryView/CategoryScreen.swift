@@ -58,6 +58,7 @@ struct CategoryScreen: View {
             .padding(.horizontal)
             .padding(.top, 8)
         }
+        .tabBarSafeArea()
         .background(Color.appBackground)
         .navigationTitle("Kategoriler")
         .navigationBarTitleDisplayMode(.inline)

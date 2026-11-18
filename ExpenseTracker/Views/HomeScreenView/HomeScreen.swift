@@ -53,9 +53,9 @@ struct HomeScreen: View {
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
-                        // Room for the raised tab button and curve, which stick out above the bar's inset.
-                        .padding(.bottom, 48)
+                        .padding(.bottom, 16)
                     }
+                    .tabBarSafeArea()
                     .refreshable { viewModel.loadData() }
                 }
             }

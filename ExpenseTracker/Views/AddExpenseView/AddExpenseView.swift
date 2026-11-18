@@ -167,6 +167,7 @@ struct AddExpenseView: View {
                 }
             }
             .dismissKeyboardOnTap()
+            .tabBarSafeArea()
 
             if scanViewModel.isProcessing {
                 Color.black.opacity(0.2)

@@ -29,6 +29,7 @@ struct SettingsScreen: View {
                 }
             }
         }
+        .tabBarSafeArea()
         .navigationTitle("Ayarlar")
         .navigationBarTitleDisplayMode(.inline)
     }

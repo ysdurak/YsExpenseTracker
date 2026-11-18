@@ -80,8 +80,6 @@ struct MainTabView: View {
         func setUpTab()->some View{
             self
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                // Keep content clear of the custom tab bar.
-                .safeAreaPadding(.bottom, 64)
                 .toolbar(.hidden, for: .tabBar)
         }
     }

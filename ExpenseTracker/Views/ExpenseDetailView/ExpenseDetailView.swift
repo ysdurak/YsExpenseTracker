@@ -42,6 +42,7 @@ struct ExpenseDetailView<ViewModel: ExpenseHandling>: View {
                 Spacer()
             }
         }
+        .tabBarSafeArea()
         .background(Color.appBackground)
         .navigationTitle("Harcama Detayları")
         .navigationBarTitleDisplayMode(.inline)

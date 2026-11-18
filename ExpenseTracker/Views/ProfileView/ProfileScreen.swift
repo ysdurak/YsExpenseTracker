@@ -49,6 +49,7 @@ struct ProfileScreen: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .tabBarSafeArea()
             .scrollContentBackground(.hidden)
             .background(Color.appBackground)
             .navigationTitle("Profil")

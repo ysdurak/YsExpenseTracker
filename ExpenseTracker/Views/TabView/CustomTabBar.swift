@@ -9,6 +9,10 @@ import Foundation
 import SwiftUI
 
 struct CustomTabBar: View {
+    /// Bottom space tab content needs to stay clear of the bar: its 64pt height plus the
+    /// raised selected button and curve, which stick out above it.
+    static let contentInset: CGFloat = 96
+
     @Binding var currentTab: Tab
     var animation: Namespace.ID
 
@@ -71,6 +75,17 @@ struct CustomTabBar: View {
         .sensoryFeedback(.selection, trigger: isSelected)
         .accessibilityLabel(tab.title)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+extension View {
+    /// Reserves room for the custom tab bar at the bottom of a scroll view or list.
+    /// Applied to the scrolling container itself, because Lists and ScrollViews inside the
+    /// tab's NavigationStack don't reliably pick up safe-area padding set further up.
+    func tabBarSafeArea() -> some View {
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            Color.clear.frame(height: CustomTabBar.contentInset)
+        }
     }
 }
 

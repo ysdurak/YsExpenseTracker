@@ -97,6 +97,7 @@ struct AddIncomeScreen: View {
                     Spacer()
                 }
             }
+            .tabBarSafeArea()
         }
         .appAlert($alert)
     }
